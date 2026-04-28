@@ -1,928 +1,1483 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>WISE03.BET — Système IA Complet</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <title>WISE03.BET — IA Sportive Pro</title>
     <style>
-        :root {
-            --bg: #020617; --card: #0f172a; --border: #1e293b; --text: #f1f5f9;
-            --muted: #94a3b8; --green: #22c55e; --pink: #d946ef; --cyan: #06b6d4;
-            --primary: #3b82f6; --danger: #ef4444; --gold: #eab308; --warning: #f97316;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
-
-        .app-shell { max-width: 480px; margin: 0 auto; padding: 15px; min-height: 100vh; position: relative; }
-        
-        .card { 
-            background: var(--card); border: 1px solid var(--border); 
-            border-radius: 24px; padding: 20px; margin-bottom: 15px; 
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-        }
-
-        input, select, textarea { 
-            width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); 
-            background: #1e293b; color: #fff; margin-bottom: 12px; font-size: 13px; 
-        }
-
-        .btn { 
-            padding: 12px; border-radius: 12px; border: none; cursor: pointer; 
-            font-weight: 700; transition: 0.3s; font-size: 12px; 
-            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-        }
-
-        .btn-primary { background: linear-gradient(135deg, var(--primary), #1d4ed8); color: white; flex: 1; }
-        .btn-success { background: var(--green); color: #000; flex: 1; }
-        .btn-danger { background: var(--danger); color: white; flex: 1; }
-        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); flex: 1; }
-        .btn-full { width: 100%; }
-        .btn-assistant { background: linear-gradient(135deg, var(--gold), var(--warning)); color: #000; }
-
-        .nav-bar { 
-            display: flex; background: var(--card); border: 1px solid var(--border); 
-            border-radius: 18px; margin-bottom: 20px; padding: 5px;
-        }
-
-        .nav-item { 
-            flex: 1; padding: 10px; text-align: center; cursor: pointer; 
-            font-size: 10px; font-weight: 800; border-radius: 12px; color: var(--muted);
-            position: relative;
-        }
-
-        .nav-item.active { background: var(--primary); color: white; }
-        .nav-item .notification-badge {
-            position: absolute; top: -5px; right: -5px; background: var(--danger);
-            color: white; border-radius: 50%; width: 18px; height: 18px;
-            font-size: 10px; display: flex; align-items: center; justify-content: center;
-        }
-
-        .analysis-res { font-size: 22px; font-weight: 900; color: var(--green); margin: 10px 0; text-align: center; }
-        .vs-container { display: flex; align-items: center; justify-content: space-around; margin: 15px 0; }
-        .team-name { font-weight: 900; font-size: 13px; text-align: center; flex: 1; }
-        
-        .premium-score {
-            background: linear-gradient(135deg, var(--pink), #a21caf);
-            border-radius: 16px; padding: 15px; text-align: center; margin: 10px 0; color: white;
-        }
-
-        .loader { width: 18px; height: 18px; border: 3px solid #fff; border-bottom-color: transparent; border-radius: 50%; display: none; animation: spin 1s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
-        .modal.active { display: flex; }
-        .modal-content { background: var(--card); padding: 25px; border-radius: 20px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
-
-        .status-badge { font-size: 10px; padding: 4px 8px; border-radius: 10px; font-weight: bold; margin-top: 5px; display: inline-block; }
-        
-        .profile-pic {
-            width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
-            margin: 10px auto; border: 3px solid var(--primary);
-        }
-        
-        .admin-img-preview { max-width: 100px; max-height: 100px; margin: 5px 0; border-radius: 8px; cursor: pointer; }
-        .ticket-item { border-left: 3px solid var(--primary); margin-bottom: 5px; padding-left: 10px; }
-        
-        .assistant-chat {
-            position: fixed; bottom: 20px; right: 20px; width: 300px;
-            background: var(--card); border: 1px solid var(--border);
-            border-radius: 16px; z-index: 999; display: none;
-            flex-direction: column; max-height: 400px;
-        }
-        .assistant-chat.active { display: flex; }
-        .assistant-header {
-            background: linear-gradient(135deg, var(--gold), var(--warning));
-            padding: 12px; border-radius: 16px 16px 0 0;
-            display: flex; justify-content: space-between; cursor: pointer;
-            color: #000; font-weight: bold;
-        }
-        .assistant-messages { flex: 1; padding: 10px; overflow-y: auto; max-height: 300px; font-size: 12px; }
-        .assistant-input { display: flex; padding: 10px; gap: 5px; border-top: 1px solid var(--border); }
-        .assistant-input input { flex: 1; margin: 0; padding: 8px; }
-        .assistant-bubble { margin: 5px 0; padding: 8px; border-radius: 12px; max-width: 85%; }
-        .assistant-user { background: var(--primary); margin-left: auto; text-align: right; }
-        .assistant-bot { background: var(--border); }
-        
-        .lang-btn {
-            position: fixed; top: 10px; right: 10px; background: var(--card);
-            border: 1px solid var(--border); border-radius: 20px; padding: 5px 10px;
-            cursor: pointer; font-size: 12px; z-index: 100;
-        }
-        
-        .stats-card { display: flex; justify-content: space-around; margin-bottom: 15px; }
-        .stat-item { text-align: center; background: var(--border); padding: 10px; border-radius: 12px; flex: 1; margin: 0 5px; }
-        .stat-number { font-size: 24px; font-weight: bold; color: var(--primary); }
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',system-ui,-apple-system,sans-serif}
+        body{background:#020617;color:#f1f5f9;overflow-x:hidden;touch-action:pan-y pinch-zoom}
+        :root{--bg:#020617;--card:#0f172a;--border:#1e293b;--text:#f1f5f9;--muted:#94a3b8;--green:#22c55e;--pink:#d946ef;--cyan:#06b6d4;--primary:#3b82f6;--danger:#ef4444;--gold:#eab308;--warning:#f97316}
+        .app-shell{max-width:480px;margin:0 auto;padding:15px;min-height:100vh;padding-bottom:120px}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:20px;margin-bottom:15px;box-shadow:0 10px 15px -3px rgba(0,0,0,.5);transition:transform .2s,box-shadow .2s}
+        .card:hover{box-shadow:0 20px 25px -5px rgba(0,0,0,.6)}
+        input,select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--border);background:#1e293b;color:#fff;margin-bottom:12px;font-size:13px;transition:border .2s,box-shadow .2s}
+        input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(59,130,246,.3)}
+        .btn{padding:12px;border-radius:12px;border:none;cursor:pointer;font-weight:700;transition:.2s;font-size:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+        .btn:active{transform:scale(.97)}
+        .btn-primary{background:linear-gradient(135deg,var(--primary),#1d4ed8);color:#fff;flex:1}
+        .btn-success{background:var(--green);color:#000;flex:1}
+        .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);flex:1}
+        .btn-full{width:100%}
+        .btn-double{background:linear-gradient(135deg,var(--cyan),#0891b2);color:#fff}
+        .btn-gourmand{background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff}
+        .btn-danger{background:var(--danger);color:#fff}
+        .btn-warning{background:var(--warning);color:#000}
+        .nav-bar{display:flex;background:var(--card);border:1px solid var(--border);border-radius:18px;margin-bottom:20px;padding:5px}
+        .nav-item{flex:1;padding:10px;text-align:center;cursor:pointer;font-size:10px;font-weight:800;border-radius:12px;color:var(--muted);transition:all .2s}
+        .nav-item.active{background:var(--primary);color:#fff;box-shadow:0 4px 8px rgba(59,130,246,.3)}
+        .analysis-res{font-size:22px;font-weight:900;color:var(--green);text-align:center}
+        .vs-container{display:flex;align-items:center;justify-content:space-around;margin:15px 0}
+        .team-name{font-weight:900;font-size:13px;text-align:center;flex:1;display:flex;align-items:center;justify-content:center;gap:6px;flex-direction:column}
+        .team-strength{font-size:9px;background:rgba(255,255,255,.1);padding:3px 8px;border-radius:20px;color:var(--muted)}
+        .premium-score{background:linear-gradient(135deg,var(--pink),#a21caf);border-radius:16px;padding:15px;text-align:center;color:#fff}
+        .loader{width:18px;height:18px;border:3px solid #fff;border-bottom-color:transparent;border-radius:50%;display:none;animation:spin 1s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .status-badge{font-size:10px;padding:4px 8px;border-radius:10px;display:inline-block}
+        .profile-pic{width:80px;height:80px;border-radius:50%;object-fit:cover;margin:10px auto;border:3px solid var(--primary)}
+        .ticket-item{border-left:3px solid var(--primary);margin-bottom:8px;padding-left:10px;display:flex;justify-content:space-between;align-items:center}
+        .ticket-header{display:flex;justify-content:space-between;align-items:center}
+        .clear-ticket-btn,.delete-ticket-btn{background:var(--danger);color:#fff;border:none;padding:4px 8px;border-radius:8px;cursor:pointer;font-size:10px}
+        .expiry-card{background:linear-gradient(135deg,#1e293b,#0f172a);border-radius:16px;padding:12px;margin-top:10px;text-align:center}
+        .expiry-days{font-size:24px;font-weight:900;color:var(--gold)}
+        .admin-contact{background:linear-gradient(135deg,#1f2937,#111827);padding:15px;border-radius:16px;text-align:center;margin-top:15px;border:1px solid var(--gold)}
+        .activation-hint{background:#1e2a3a;border-radius:12px;padding:12px;margin:16px 0;font-size:12px;color:var(--warning);text-align:center}
+        .splash-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at 30% 10%,#020617,#030014);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2000;transition:opacity .6s}
+        .splash-logo{font-size:48px;font-weight:900;background:linear-gradient(135deg,#3b82f6,#06b6d4);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:40px}
+        .splash-loader{width:60px;height:60px;border:4px solid rgba(59,130,246,.2);border-top:4px solid var(--primary);border-radius:50%;animation:spin 1s linear infinite}
+        .custom-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e293b;backdrop-filter:blur(12px);border-left:4px solid var(--primary);padding:12px 20px;border-radius:48px;font-size:13px;font-weight:500;color:#fff;box-shadow:0 10px 25px -5px rgba(0,0,0,.5);z-index:3000;animation:fadeUp .3s ease;max-width:90%;white-space:normal;text-align:center}
+        @keyframes fadeUp{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}
+        .btn-assistant{position:fixed;bottom:20px;right:20px;background:linear-gradient(135deg,var(--gold),var(--warning));color:#000;border:none;border-radius:40px;padding:10px 15px;font-weight:700;cursor:pointer;z-index:998;box-shadow:0 4px 12px rgba(0,0,0,.3);transition:transform .2s}
+        .btn-assistant:active{transform:scale(.95)}
+        .back-btn{background:var(--border);padding:8px 15px;border-radius:20px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:15px;transition:background .2s}
+        .back-btn:active{background:#334155}
+        .markets-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+        .market-item{background:rgba(255,255,255,.05);border-radius:8px;padding:6px 8px;font-size:10px;display:flex;justify-content:space-between;align-items:center}
+        .market-val-yes{color:var(--green);font-weight:700}
+        .market-val-no{color:var(--danger);font-weight:700}
+        .countdown-timer{background:linear-gradient(135deg,#065f46,#064e3b);border:1px solid #10b981;border-radius:16px;padding:15px;text-align:center;margin-top:10px}
+        .countdown-timer.expired{background:linear-gradient(135deg,#7f1d1d,#991b1b);border-color:var(--danger)}
+        .countdown-value{font-size:28px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:2px}
+        .countdown-label{font-size:11px;color:var(--muted);margin-top:4px}
+        .entity-badge{font-size:9px;padding:2px 6px;border-radius:8px;display:inline-block;margin-top:2px}
+        .entity-club{background:#1e3a5f;color:#60a5fa}
+        .entity-national{background:#3b1f1f;color:#fca5a5}
+        .incompatibility-alert{background:linear-gradient(135deg,#7f1d1d,#991b1b);border:1px solid var(--danger);border-radius:16px;padding:15px;margin-top:10px;text-align:center}
+        .daily-counter{background:var(--border);border-radius:12px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:11px}
+        .daily-dots{display:flex;gap:6px}
+        .daily-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--muted)}
+        .daily-dot.filled{background:var(--green);border-color:var(--green)}
+        .daily-dot.empty{background:transparent}
+        .ticket-badge-gourmand{background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700}
+        .ticket-badge-normal{background:var(--border);color:var(--muted);font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700}
+        .match-limit-warning{background:#451a03;border:1px solid var(--warning);border-radius:10px;padding:8px;font-size:11px;text-align:center;color:var(--warning);margin-bottom:8px}
+        .security-badge{background:linear-gradient(135deg,#065f46,#064e3b);border:1px solid #10b981;border-radius:8px;padding:4px 10px;font-size:9px;color:#22c55e;display:inline-flex;align-items:center;gap:4px}
+        .tamper-alert{background:linear-gradient(135deg,#7f1d1d,#991b1b);border:2px solid var(--danger);border-radius:16px;padding:20px;text-align:center;margin:20px 0}
+        .code-guide{background:#1e293b;border-radius:12px;padding:12px;margin-top:8px;font-size:10px;color:var(--muted);text-align:left}
+        .code-guide b{color:var(--gold)}
+        .code-guide .row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+        details summary{list-style:none;cursor:pointer;transition:all .2s}
+        details summary::-webkit-details-marker{display:none}
+        .analyses-card{background:#065f46;border-radius:12px;padding:10px;margin-top:10px;text-align:center}
+        .analyses-card-warning{background:#7f1d1d;border-radius:12px;padding:10px;margin-top:10px;text-align:center}
     </style>
 </head>
 <body>
+<div class="splash-screen" id="splashScreen">
+    <div class="splash-logo">WISE03<span style="color:#fff">.BET</span></div>
+    <div class="splash-loader"></div>
+    <div style="margin-top:20px;color:#94a3b8">IA Sportive Pro — Chargement...</div>
+    <div id="splash-security" style="margin-top:10px;font-size:10px;color:#22c55e">🔒 Vérification sécurité...</div>
+</div>
 
-    <div class="app-shell">
-        <button class="lang-btn" onclick="toggleLanguage()">🌐 English</button>
-        
-        <header style="text-align: center; padding: 20px 0;">
-            <h1 style="color: var(--primary); letter-spacing: 2px;">WISE03<span style="color:white">.BET</span></h1>
-        </header>
+<div class="app-shell" id="appShell" style="display:none">
+    <header style="text-align:center;padding:20px 0">
+        <h1 style="color:var(--primary)">WISE03<span style="color:#fff">.BET</span></h1>
+        <div style="display:flex;justify-content:center;gap:8px;align-items:center;margin-top:4px">
+            <span style="font-size:11px;color:var(--muted)">v5.0 — 23 Marchés</span>
+            <span class="security-badge">🛡️ Protégé</span>
+        </div>
+    </header>
 
-        <!-- AUTH -->
-        <section id="auth-screen">
-            <div class="card">
-                <h3 style="text-align:center; margin-bottom:15px;" data-key="login_title">Connexion</h3>
-                <input type="email" id="login-email" placeholder="Email" data-key="login_email_placeholder">
-                <input type="password" id="login-pass" placeholder="Mot de passe" data-key="login_pass_placeholder">
-                <button class="btn btn-primary btn-full" onclick="loginUser()" data-key="login_btn">SE CONNECTER</button>
-                <button class="btn btn-ghost btn-full" style="margin-top:10px;" onclick="toggleAuth(true)" data-key="register_btn">Créer un compte</button>
-                <button class="btn btn-ghost btn-full" style="margin-top:30px; font-size:10px;" onclick="showAdminLogin()" data-key="admin_console">CONSOLE MUTWE</button>
+    <!-- AUTH -->
+    <section id="auth-screen">
+        <div class="card">
+            <h3 style="text-align:center">🔐 Connexion</h3>
+            <input type="email" id="login-email" placeholder="Email">
+            <input type="password" id="login-pass" placeholder="Mot de passe">
+            <div id="login-error" style="color:var(--danger);font-size:12px"></div>
+            <button class="btn btn-primary btn-full" onclick="loginUser()">SE CONNECTER</button>
+            <button class="btn btn-ghost btn-full" style="margin-top:10px" onclick="toggleAuth(true)">Créer un compte</button>
+            <div class="admin-contact">📞 Admin: <a href="https://wa.me/243983971254" target="_blank" style="color:var(--gold)">+243 983 971 254</a></div>
+        </div>
+    </section>
+
+    <!-- REGISTER -->
+    <section id="register-screen" style="display:none">
+        <div class="card">
+            <h3 style="text-align:center">📝 Inscription</h3>
+            <input type="text" id="reg-name" placeholder="Nom complet">
+            <input type="email" id="reg-email" placeholder="Email">
+            <div id="email-error" style="color:var(--danger);font-size:12px"></div>
+            <input type="tel" id="reg-whatsapp" placeholder="WhatsApp (ex: 24390123456)">
+            <input type="password" id="reg-pass" placeholder="Mot de passe (min 4)">
+            <button class="btn btn-primary btn-full" onclick="registerUser()">S'INSCRIRE</button>
+            <button class="btn btn-ghost btn-full" style="margin-top:10px" onclick="toggleAuth(false)">Retour</button>
+            <div class="admin-contact">📞 Admin: <a href="https://wa.me/243983971254" target="_blank" style="color:var(--gold)">+243 983 971 254</a></div>
+        </div>
+    </section>
+
+    <!-- TAMPER ALERT -->
+    <section id="tamper-alert-section" style="display:none">
+        <div class="tamper-alert">
+            <div style="font-size:40px;margin-bottom:10px">🚨</div>
+            <h3 style="color:var(--danger)">Violation de sécurité détectée</h3>
+            <p style="font-size:12px;color:var(--muted);margin-top:8px">Les données ont été modifiées de manière non autorisée. La base de données a été réinitialisée pour protéger l'intégrité du système.</p>
+            <button class="btn btn-primary btn-full" style="margin-top:15px" onclick="location.reload()">🔄 Recharger l'application</button>
+        </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" style="display:none">
+        <div class="nav-bar">
+            <div class="nav-item active" onclick="switchView('predict')">⚽ ANALYSE</div>
+            <div class="nav-item" onclick="switchView('tickets')">🎫 TICKETS</div>
+            <div class="nav-item" onclick="switchView('profile')">👤 PROFIL</div>
+        </div>
+
+        <div id="view-predict">
+            <div id="verify-alert" class="card" style="display:none;border-color:var(--warning)">
+                <p style="font-size:12px;color:var(--warning);text-align:center">⚠️ Compte en attente d'activation.<br>Contactez l'admin WhatsApp pour votre code 20 chiffres.</p>
             </div>
-        </section>
-
-        <section id="register-screen" style="display:none;">
-            <div class="card">
-                <h3 style="text-align:center; margin-bottom:15px;" data-key="register_title">Inscription</h3>
-                <input type="text" id="reg-name" placeholder="Nom complet" data-key="reg_name_placeholder">
-                <input type="email" id="reg-email" placeholder="Email" data-key="reg_email_placeholder">
-                <input type="tel" id="reg-whatsapp" placeholder="Numéro WhatsApp (ex: 22990123456)" data-key="reg_whatsapp_placeholder">
-                <input type="password" id="reg-pass" placeholder="Mot de passe" data-key="reg_pass_placeholder">
-                <button class="btn btn-primary btn-full" onclick="registerUser()" data-key="register_submit">S'INSCRIRE</button>
-                <button class="btn btn-ghost btn-full" style="margin-top:10px;" onclick="toggleAuth(false)" data-key="back_btn">Retour</button>
-            </div>
-        </section>
-
-        <!-- DASHBOARD -->
-        <section id="dashboard" style="display:none;">
-            <div class="nav-bar">
-                <div class="nav-item active" id="nav-predict" onclick="switchView('predict')" data-key="nav_analyze">ANALYSE</div>
-                <div class="nav-item" id="nav-tickets" onclick="switchView('tickets')" data-key="nav_tickets">TICKETS</div>
-                <div class="nav-item" id="nav-messages" onclick="switchView('messages')" data-key="nav_messages">MESSAGES</div>
-                <div class="nav-item" id="nav-profile" onclick="switchView('profile')" data-key="nav_profile">PROFIL</div>
-            </div>
-
-            <!-- VIEW PREDICT -->
-            <div id="view-predict">
-                <div id="verify-alert" class="card" style="display:none; border-color:var(--warning);">
-                    <p style="font-size:12px; color:var(--warning); text-align:center;" data-key="verify_alert">⚠️ Votre compte est en attente de vérification. Téléchargez votre ID dans "Profil".</p>
+            <div id="predict-main" style="display:none">
+                <div class="card">
+                    <label>🏠 Équipe Domicile</label>
+                    <input type="text" id="team-h" placeholder="Chercher une équipe..." list="teams-list" autocomplete="off">
+                    <div id="entity-info-h" style="font-size:10px;color:var(--muted);margin-top:-8px;margin-bottom:8px"></div>
+                    <label>✈️ Équipe Extérieur</label>
+                    <input type="text" id="team-a" placeholder="Chercher une équipe..." list="teams-list" autocomplete="off">
+                    <div id="entity-info-a" style="font-size:10px;color:var(--muted);margin-top:-8px;margin-bottom:8px"></div>
+                    <datalist id="teams-list"></datalist>
+                    <div id="ana-error" style="color:var(--danger);font-size:11px"></div>
+                    <div id="incompatibility-alert" style="display:none"></div>
+                    <button class="btn btn-primary btn-full" onclick="runAnalysis()" id="btn-ana">
+                        <span>🔍 ANALYSER LE MATCH</span>
+                        <div class="loader" id="ana-loader"></div>
+                    </button>
                 </div>
-
-                <div id="predict-main" style="display:none;">
-                    <div class="card">
-                        <label style="font-size:11px; color:var(--muted);" data-key="team_h_label">Équipe Domicile</label>
-                        <input type="text" id="team-h" placeholder="Chercher..." list="teams-list">
-                        <label style="font-size:11px; color:var(--muted);" data-key="team_a_label">Équipe Extérieur</label>
-                        <input type="text" id="team-a" placeholder="Chercher..." list="teams-list">
-                        <datalist id="teams-list"></datalist>
-                        
-                        <div id="ana-error" style="color:var(--danger); font-size:11px; margin-bottom:10px;"></div>
-
-                        <button class="btn btn-primary btn-full" onclick="runAnalysis()" id="btn-ana">
-                            <span data-key="analyze_btn">ANALYSER LE MATCH</span>
-                            <div class="loader" id="ana-loader"></div>
-                        </button>
-                    </div>
-
-                    <div id="result-box" style="display:none;">
-                        <div class="card" style="border:2px solid var(--cyan);">
-                            <div class="vs-container">
-                                <div class="team-name" id="res-h"></div>
-                                <div style="color:var(--primary); font-weight:900;">VS</div>
-                                <div class="team-name" id="res-a"></div>
-                            </div>
-                            <div id="res-market" class="analysis-res">---</div>
-                            
-                            <div id="premium-lock" class="premium-score" style="background:var(--border); display:none;">
-                                🔒 <span data-key="premium_lock">Score Exact Réservé Premium</span>
-                            </div>
-                            <div id="premium-data" class="premium-score" style="display:none;">
-                                <small data-key="exact_score_label">SCORE EXACT PRÉDIT</small>
-                                <div style="font-size:32px; font-weight:900;" id="res-score">?-?</div>
-                            </div>
-                            
-                            <button class="btn btn-ghost btn-full" onclick="addToTicket()" data-key="add_to_ticket">+ AJOUTER AU COUPON</button>
+                <div id="result-box" style="display:none">
+                    <div class="card" style="border:2px solid var(--cyan)">
+                        <div class="vs-container">
+                            <div class="team-name" id="res-h"></div>
+                            <div style="font-weight:900;color:var(--cyan)">VS</div>
+                            <div class="team-name" id="res-a"></div>
                         </div>
-                    </div>
-
-                    <div id="current-ticket" class="card" style="display:none; border-color:var(--green);">
-                        <h4 style="margin-bottom:10px;"><span data-key="current_ticket">Coupon Actuel</span> (<span id="ticket-count">0</span>)</h4>
-                        <div id="ticket-list"></div>
-                        <button class="btn btn-success btn-full" style="margin-top:10px;" onclick="saveTicket()" data-key="save_ticket">ENREGISTRER LE TICKET</button>
+                        <div id="res-market" class="analysis-res">---</div>
+                        <div id="res-ht" style="text-align:center;font-size:13px;color:var(--muted)"></div>
+                        <div id="res-score-exact" class="premium-score" style="display:none"><small>SCORE PRÉDIT</small><div style="font-size:28px" id="res-score">?-?</div></div>
+                        <div id="markets-display" style="display:none">
+                            <div style="font-size:11px;font-weight:700;color:var(--cyan);margin:10px 0 5px">📊 23 MARCHÉS</div>
+                            <div class="markets-grid" id="markets-grid"></div>
+                        </div>
+                        <button class="btn btn-ghost btn-full" style="margin-top:10px" onclick="addToTicket()">+ AJOUTER AU COUPON</button>
                     </div>
                 </div>
-            </div>
-
-            <!-- TICKETS -->
-            <div id="view-tickets" style="display:none;">
-                <div id="saved-tickets-list"></div>
-            </div>
-
-            <!-- MESSAGES -->
-            <div id="view-messages" style="display:none;">
-                <div id="msg-list"></div>
-            </div>
-
-            <!-- PROFILE -->
-            <div id="view-profile" style="display:none;">
-                <div class="card" style="text-align:center;">
-                    <div id="profile-pic-container"></div>
-                    <h2 id="prof-name">---</h2>
-                    <p id="prof-email" style="font-size:12px; color:var(--muted);"></p>
-                    <p id="prof-whatsapp" style="font-size:12px; color:var(--muted);"></p>
-                    <div id="prof-badge"></div>
-                    <hr style="margin:20px 0; opacity:0.1;">
-                    <div id="profile-pic-section">
-                        <p style="font-size:11px; margin-bottom:10px;" data-key="profile_pic_label">Photo de profil :</p>
-                        <button class="btn btn-primary btn-full" onclick="document.getElementById('profile-file').click()" data-key="upload_profile_btn">📸 CHARGER PHOTO DE PROFIL</button>
-                        <input type="file" id="profile-file" style="display:none;" accept="image/*" onchange="handleProfileUpload(this)">
-                    </div>
-                    <div id="id-upload-section">
-                        <p style="font-size:11px; margin-bottom:10px;" data-key="id_upload_label">Vérification d'identité requise :</p>
-                        <button class="btn btn-warning btn-full" onclick="document.getElementById('id-file').click()" data-key="upload_id_btn">📷 TÉLÉCHARGER PIÈCE ID</button>
-                        <input type="file" id="id-file" style="display:none;" accept="image/*" onchange="handleIDUpload(this)">
-                    </div>
-                    <button class="btn btn-danger btn-full" style="margin-top:20px;" onclick="logout()" data-key="logout_btn">DÉCONNEXION</button>
+                <div id="current-ticket" class="card" style="display:none;border-color:var(--green)">
+                    <div class="ticket-header"><h4 id="coupon-title">🎫 Coupon (0/20)</h4><button class="clear-ticket-btn" onclick="clearCurrentTicket()">🗑️ EFFACER</button></div>
+                    <div id="match-limit-warning" class="match-limit-warning" style="display:none"></div>
+                    <div id="ticket-list"></div>
+                    <button class="btn btn-success btn-full" onclick="saveTicket()">💾 ENREGISTRER LE TICKET</button>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- ADMIN -->
-        <section id="admin-login" style="display:none;">
-            <div class="card">
-                <input type="password" id="admin-code" placeholder="Code Secret Mutwe">
-                <button class="btn btn-danger btn-full" onclick="loginAdmin()" data-key="admin_login_btn">ACCÉDER</button>
-                <button class="btn btn-ghost btn-full" style="margin-top:10px;" onclick="location.reload()" data-key="back_btn">RETOUR</button>
-            </div>
-        </section>
+        <div id="view-tickets" style="display:none"><div id="daily-counter-display"></div><div id="tickets-list-view"></div></div>
+        <div id="view-ticket-detail" style="display:none"><div class="back-btn" onclick="backToTicketsList()">← Retour</div><div id="ticket-detail-content"></div></div>
 
-        <section id="admin-panel" style="display:none;">
-            <div class="stats-card" id="admin-stats">
-                <div class="stat-item"><div class="stat-number" id="stat-users">0</div><div data-key="stat_total_users">Total Utilisateurs</div></div>
-                <div class="stat-item"><div class="stat-number" id="stat-new">0</div><div data-key="stat_new_today">Nouveaux aujourd'hui</div></div>
-                <div class="stat-item"><div class="stat-number" id="stat-premium">0</div><div data-key="stat_premium">Premium</div></div>
-            </div>
-            <h3 style="text-align:center; color:var(--danger); margin-bottom:20px;" data-key="admin_title">🛡️ CONSOLE MUTWE</h3>
-            <div id="admin-users"></div>
-            <button class="btn btn-ghost btn-full" onclick="location.reload()" data-key="exit_btn">QUITTER</button>
-        </section>
-        
-        <!-- ASSISTANT ZOLA -->
-        <div id="assistant-chat" class="assistant-chat">
-            <div class="assistant-header" onclick="toggleAssistant()">
-                <span>🤖 Zola - Assistant</span>
-                <span>▼</span>
-            </div>
-            <div class="assistant-messages" id="assistant-messages">
-                <div class="assistant-bubble assistant-bot">👋 Bonjour ! Je suis Zola. Posez-moi vos questions sur l'utilisation de WISE03.BET !</div>
-            </div>
-            <div class="assistant-input">
-                <input type="text" id="assistant-input" placeholder="Votre question..." onkeypress="if(event.key==='Enter')askZola()">
-                <button class="btn btn-primary" onclick="askZola()" style="padding:8px 12px;">➤</button>
+        <div id="view-profile" style="display:none">
+            <div class="card" style="text-align:center">
+                <div id="profile-pic-container"></div>
+                <h2 id="prof-name">---</h2>
+                <p id="prof-email" style="font-size:12px"></p>
+                <p id="prof-whatsapp" style="font-size:12px"></p>
+                <div id="prof-badge"></div>
+                <div id="premium-expiry-info"></div>
+                <div id="countdown-display"></div>
+                <hr style="border-color:var(--border);margin:15px 0">
+                <button class="btn btn-primary btn-full" onclick="document.getElementById('profile-file').click()">📸 PHOTO DE PROFIL</button>
+                <input type="file" id="profile-file" style="display:none" accept="image/*" onchange="handleProfileUpload(this)">
+                <div class="activation-hint" id="activation-hint-profile" style="display:none">
+                    <details style="cursor:pointer; background:#1e293b; border-radius:12px; padding:10px; margin-top:8px;">
+                        <summary style="color:var(--warning); font-weight:700; font-size:12px;">🔑 Activer un code</summary>
+                        <div style="margin-top:10px;">
+                            <div style="margin-top:10px">
+                                <input type="text" id="activation-code-input" placeholder="Code 20 chiffres" maxlength="20" inputmode="numeric">
+                                <button class="btn btn-warning btn-full" onclick="validateActivationCode()">🔓 VALIDER LE CODE</button>
+                                <div id="code-status"></div>
+                                <p style="font-size:10px;color:var(--muted);margin-top:8px">Contactez l'admin WhatsApp pour obtenir votre code d'activation.</p>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+                <div class="admin-contact" style="margin-top:15px">📞 Admin: <a href="https://wa.me/243983971254" target="_blank" style="color:var(--gold)">+243 983 971 254</a></div>
+                <button class="btn btn-danger btn-full" style="margin-top:20px" onclick="logout()">🚪 DÉCONNEXION</button>
             </div>
         </div>
-        
-        <button class="btn btn-assistant" style="position:fixed; bottom:20px; right:20px; width:auto; padding:10px 15px; z-index:998;" onclick="toggleAssistant()">
-            🤖 Zola
-        </button>
-    </div>
+    </section>
 
-    <!-- MODAL PREMIUM -->
-    <div id="modal-premium" class="modal">
-        <div class="modal-content">
-            <h4>Activer Premium</h4>
-            <input type="number" id="pre-days" placeholder="Nombre de jours" value="30">
-            <div style="display:flex; gap:10px;">
-                <button class="btn btn-success" onclick="confirmPremium()">ACTIVER</button>
-                <button class="btn btn-ghost" onclick="closeModal()">ANNULER</button>
-            </div>
-        </div>
+    <!-- ZOLA -->
+    <div id="assistant-chat" style="position:fixed;bottom:80px;right:15px;width:280px;background:var(--card);border:1px solid var(--border);border-radius:16px;display:none;flex-direction:column;z-index:999">
+        <div style="background:linear-gradient(135deg,var(--gold),var(--warning));padding:10px;border-radius:16px 16px 0 0;display:flex;justify-content:space-between;cursor:pointer" onclick="toggleAssistant()"><span>🤖 Zola</span><span>▼</span></div>
+        <div id="assistant-messages" style="padding:10px;max-height:250px;overflow-y:auto;font-size:12px"><div style="background:var(--border);margin:5px 0;padding:8px;border-radius:12px">👋 Bonjour ! Je suis Zola. Posez vos questions !</div></div>
+        <div style="display:flex;padding:10px;gap:5px"><input type="text" id="assistant-input" style="flex:1;margin:0;padding:8px" placeholder="Question..." onkeypress="if(event.key==='Enter')askZola()"><button class="btn btn-primary" onclick="askZola()" style="padding:8px">➤</button></div>
     </div>
+    <button class="btn-assistant" onclick="toggleAssistant()">🤖 Zola</button>
+</div>
+
+<script>
+// ====================================================================
+// 🔒 MODULE SÉCURITÉ JSON — Protection anti-tamper
+// ====================================================================
+const SEC=(()=>{
+    const _K='w03_s5k_'+btoa('wise03bet2025secure');
+    const _S='w03_sign';
+    function _h(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193);}return(h>>>0).toString(36);}
+    function _x(s,k){let r='';for(let i=0;i<s.length;i++)r+=String.fromCharCode(s.charCodeAt(i)^k.charCodeAt(i%k.length));return r;}
+    function sign(d){const j=JSON.stringify(d);const e=_x(j,_K);const sig=_h(j+_K);return{d:e,s:sig,t:Date.now()};}
+    function verify(w){try{if(!w||!w.d||!w.s||!w.t)return null;if(Date.now()-w.t>90*24*36e5)return null;const j=_x(w.d,_K);if(_h(j+_K)!==w.s)return null;return JSON.parse(j);}catch(e){return null;}}
+    function load(){try{const r=localStorage.getItem(_S);if(!r)return null;return verify(JSON.parse(r));}catch(e){return null;}}
+    function save(d){try{localStorage.setItem(_S,JSON.stringify(sign(d)));return true;}catch(e){return false;}}
+    function tamper(){localStorage.removeItem(_S);localStorage.removeItem('w03_codes');}
+    return{load,save,tamper,sign,verify};
+})();
+
+// Codes utilisés (signés séparément)
+const CODE_SEC=(()=>{
+    const _K='w03_ck_'+btoa('codes2025');
+    function _h(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193);}return(h>>>0).toString(36);}
+    function _x(s,k){let r='';for(let i=0;i<s.length;i++)r+=String.fromCharCode(s.charCodeAt(i)^k.charCodeAt(i%k.length));return r;}
+    function load(){try{const r=localStorage.getItem('w03_cs');if(!r)return[];const w=JSON.parse(r);if(!w.d||!w.s)return[];const j=_x(w.d,_K);if(_h(j+_K)!==w.s)return[];return JSON.parse(j);}catch(e){return[];}}
+    function save(d){try{const j=JSON.stringify(d);const e=_x(j,_K);localStorage.setItem('w03_cs',JSON.stringify({d:e,s:_h(j+_K)}));}catch(e){}}
+    return{load,save};
+})();
+
+// ====================================================================
+// CHARGEMENT BASE DE DONNÉES AVEC VÉRIFICATION SÉCURITÉ
+// ====================================================================
+let db=[];
+let securityBreach=false;
+
+(function initSecure(){
+    const data=SEC.load();
+    if(data===null){
+        const existing=localStorage.getItem('w03_s5k_'+btoa('wise03bet2025secure'));
+        if(existing){
+            securityBreach=true;
+            SEC.tamper();
+            document.getElementById('splash-security').innerHTML='🚨 Violation détectée !';
+            document.getElementById('splash-security').style.color='#ef4444';
+        }
+        db=[];
+        SEC.save(db);
+    } else {
+        db=data;
+    }
+})();
+
+let usedCodes=CODE_SEC.load();
+let currentUser=null, currentTicket=[], tempMatch=null, selectedTicketIdx=null, cdInterval=null;
+
+function saveDB(){SEC.save(db);}
+function saveCodes(){CODE_SEC.save(usedCodes);}
+function updUser(){const i=db.findIndex(u=>u.email===currentUser.email);if(i!==-1){db[i]=currentUser;saveDB();}}
+
+// ====================================================================
+// SPLASH
+// ====================================================================
+(function(){
+    const s=document.getElementById('splashScreen'),a=document.getElementById('appShell');
+    function hide(){
+        if(securityBreach){
+            s.style.display='none';a.style.display='block';
+            document.getElementById('tamper-alert-section').style.display='block';
+            return;
+        }
+        s.style.transition='opacity .5s';s.style.opacity='0';
+        setTimeout(()=>{s.style.display='none';a.style.display='block';},500);
+    }
+    window.addEventListener('load',()=>setTimeout(hide,1400));
+    setTimeout(hide,2800);
+})();
+
+// ====================================================================
+// TOAST
+// ====================================================================
+function showToast(m,e=false){const x=document.querySelector('.custom-toast');if(x)x.remove();const t=document.createElement('div');t.className='custom-toast';t.style.borderLeftColor=e?'#ef4444':'#22c55e';t.innerText=m;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},2800);}
+
+// ====================================================================
+// 🏟️ BASE DE DONNÉES ÉQUIPES COMPLÈTE (500+ clubs & sélections)
+// ====================================================================
+const T={
+"Argentine":{t:"n",c:"Argentine",p:"FIFA",cl:"elite",s:95,a:92,d:90,h:0.40},
+"France":{t:"n",c:"France",p:"FIFA",cl:"elite",s:94,a:91,d:89,h:0.38},
+"Brésil":{t:"n",c:"Brésil",p:"FIFA",cl:"elite",s:93,a:93,d:86,h:0.42},
+"Angleterre":{t:"n",c:"Angleterre",p:"FIFA",cl:"elite",s:92,a:90,d:88,h:0.35},
+"Espagne":{t:"n",c:"Espagne",p:"FIFA",cl:"elite",s:92,a:90,d:88,h:0.36},
+"Portugal":{t:"n",c:"Portugal",p:"FIFA",cl:"elite",s:91,a:89,d:87,h:0.34},
+"Allemagne":{t:"n",c:"Allemagne",p:"FIFA",cl:"elite",s:91,a:88,d:88,h:0.37},
+"Pays-Bas":{t:"n",c:"Pays-Bas",p:"FIFA",cl:"elite",s:90,a:88,d:86,h:0.33},
+"Italie":{t:"n",c:"Italie",p:"FIFA",cl:"fort",s:87,a:84,d:90,h:0.35},
+"Belgique":{t:"n",c:"Belgique",p:"FIFA",cl:"fort",s:85,a:85,d:82,h:0.30},
+"Uruguay":{t:"n",c:"Uruguay",p:"FIFA",cl:"fort",s:84,a:84,d:83,h:0.36},
+"Croatie":{t:"n",c:"Croatie",p:"FIFA",cl:"fort",s:83,a:82,d:84,h:0.32},
+"Maroc":{t:"n",c:"Maroc",p:"FIFA",cl:"fort",s:82,a:80,d:86,h:0.38},
+"Sénégal":{t:"n",c:"Sénégal",p:"FIFA",cl:"fort",s:80,a:80,d:80,h:0.35},
+"Colombie":{t:"n",c:"Colombie",p:"FIFA",cl:"fort",s:80,a:80,d:78,h:0.36},
+"Japon":{t:"n",c:"Japon",p:"FIFA",cl:"fort",s:80,a:79,d:80,h:0.32},
+"Suisse":{t:"n",c:"Suisse",p:"FIFA",cl:"fort",s:79,a:76,d:82,h:0.30},
+"Danemark":{t:"n",c:"Danemark",p:"FIFA",cl:"fort",s:79,a:78,d:80,h:0.30},
+"États-Unis":{t:"n",c:"États-Unis",p:"FIFA",cl:"fort",s:78,a:78,d:76,h:0.28},
+"Mexique":{t:"n",c:"Mexique",p:"FIFA",cl:"moyen",s:75,a:74,d:74,h:0.32},
+"Nigeria":{t:"n",c:"Nigeria",p:"FIFA",cl:"moyen",s:74,a:75,d:72,h:0.35},
+"Corée du Sud":{t:"n",c:"Corée du Sud",p:"FIFA",cl:"moyen",s:74,a:73,d:74,h:0.30},
+"Égypte":{t:"n",c:"Égypte",p:"FIFA",cl:"moyen",s:73,a:74,d:72,h:0.35},
+"Côte d'Ivoire":{t:"n",c:"Côte d'Ivoire",p:"FIFA",cl:"moyen",s:73,a:73,d:72,h:0.34},
+"Algérie":{t:"n",c:"Algérie",p:"FIFA",cl:"moyen",s:72,a:72,d:72,h:0.34},
+"Équateur":{t:"n",c:"Équateur",p:"FIFA",cl:"moyen",s:72,a:71,d:72,h:0.36},
+"Cameroun":{t:"n",c:"Cameroun",p:"FIFA",cl:"moyen",s:71,a:71,d:70,h:0.33},
+"Iran":{t:"n",c:"Iran",p:"FIFA",cl:"moyen",s:71,a:70,d:74,h:0.32},
+"Tunisie":{t:"n",c:"Tunisie",p:"FIFA",cl:"moyen",s:70,a:69,d:72,h:0.33},
+"Pologne ":{t:"n",c:"Pologne",p:"FIFA",cl:"moyen",s:70,a:70,d:70,h:0.28},
+"Serbie":{t:"n",c:"Serbie",p:"FIFA",cl:"moyen",s:70,a:72,d:68,h:0.28},
+"Turquie":{t:"n",c:"Turquie",p:"FIFA",cl:"moyen",s:70,a:71,d:68,h:0.30},
+"Autriche":{t:"n",c:"Autriche",p:"FIFA",cl:"moyen",s:70,a:70,d:70,h:0.28},
+"Ukraine":{t:"n",c:"Ukraine",p:"FIFA",cl:"moyen",s:69,a:68,d:70,h:0.28},
+"Chili":{t:"n",c:"Chili",p:"FIFA",cl:"moyen",s:68,a:68,d:68,h:0.32},
+"Suède":{t:"n",c:"Suède",p:"FIFA",cl:"moyen",s:68,a:67,d:70,h:0.26},
+"Norvège":{t:"n",c:"Norvège",p:"FIFA",cl:"moyen",s:68,a:70,d:66,h:0.26},
+"Hongrie":{t:"n",c:"Hongrie",p:"FIFA",cl:"moyen",s:67,a:66,d:68,h:0.28},
+"Australie":{t:"n",c:"Australie",p:"FIFA",cl:"faible",s:65,a:64,d:64,h:0.28},
+"Ghana":{t:"n",c:"Ghana",p:"FIFA",cl:"faible",s:64,a:64,d:62,h:0.32},
+"Canada":{t:"n",c:"Canada",p:"FIFA",cl:"faible",s:64,a:64,d:62,h:0.26},
+"RD Congo":{t:"n",c:"RD Congo",p:"FIFA",cl:"faible",s:60,a:60,d:58,h:0.32},
+"Costa Rica":{t:"n",c:"Costa Rica",p:"FIFA",cl:"faible",s:62,a:58,d:66,h:0.28},
+"Panama":{t:"n",c:"Panama",p:"FIFA",cl:"faible",s:60,a:58,d:62,h:0.26},
+"Mali":{t:"n",c:"Mali",p:"FIFA",cl:"faible",s:62,a:62,d:60,h:0.30},
+"Pérou":{t:"n",c:"Pérou",p:"FIFA",cl:"faible",s:62,a:60,d:62,h:0.30},
+"Afrique du Sud":{t:"n",c:"Afrique du Sud",p:"FIFA",cl:"faible",s:61,a:60,d:62,h:0.30},
+"Arabie Saoudite":{t:"n",c:"Arabie Saoudite",p:"FIFA",cl:"faible",s:62,a:62,d:60,h:0.28},
+"Burkina Faso":{t:"n",c:"Burkina Faso",p:"FIFA",cl:"faible",s:61,a:60,d:60,h:0.30},
+"Guinée":{t:"n",c:"Guinée",p:"FIFA",cl:"faible",s:60,a:60,d:58,h:0.30},
+"Paraguay":{t:"n",c:"Paraguay",p:"FIFA",cl:"faible",s:60,a:58,d:62,h:0.30},
+"Venezuela":{t:"n",c:"Venezuela",p:"FIFA",cl:"faible",s:59,a:58,d:60,h:0.28},
+"Bolivie":{t:"n",c:"Bolivie",p:"FIFA",cl:"faible",s:55,a:54,d:54,h:0.35},
+"Irak":{t:"n",c:"Irak",p:"FIFA",cl:"faible",s:56,a:55,d:56,h:0.26},
+"Qatar":{t:"n",c:"Qatar",p:"FIFA",cl:"faible",s:60,a:60,d:60,h:0.28},
+"Émirats Arabes Unis":{t:"n",c:"Émirats Arabes Unis",p:"FIFA",cl:"faible",s:58,a:58,d:56,h:0.26},
+"Jamaïque":{t:"n",c:"Jamaïque",p:"FIFA",cl:"faible",s:56,a:56,d:54,h:0.26},
+"Honduras":{t:"n",c:"Honduras",p:"FIFA",cl:"faible",s:55,a:54,d:54,h:0.26},
+"Nouvelle-Zélande":{t:"n",c:"Nouvelle-Zélande",p:"FIFA",cl:"faible",s:58,a:56,d:58,h:0.22},
+"Gabon":{t:"n",c:"Gabon",p:"FIFA",cl:"faible",s:58,a:58,d:56,h:0.28},
+"Zambie":{t:"n",c:"Zambie",p:"FIFA",cl:"faible",s:57,a:56,d:56,h:0.28},
+"Angola":{t:"n",c:"Angola",p:"FIFA",cl:"faible",s:57,a:56,d:56,h:0.28},
+"Ouzbékistan":{t:"n",c:"Ouzbékistan",p:"FIFA",cl:"faible",s:58,a:57,d:58,h:0.26},
+"Jordanie":{t:"n",c:"Jordanie",p:"FIFA",cl:"faible",s:56,a:55,d:56,h:0.24},
+"Chine":{t:"n",c:"Chine",p:"FIFA",cl:"faible",s:58,a:56,d:58,h:0.26},
+"Inde":{t:"n",c:"Inde",p:"FIFA",cl:"faible",s:50,a:48,d:50,h:0.22},
+"Manchester City":{t:"c",c:"Angleterre",p:"Premier League",cl:"elite",s:94,a:95,d:90,h:0.38},
+"Arsenal":{t:"c",c:"Angleterre",p:"Premier League",cl:"elite",s:91,a:90,d:88,h:0.36},
+"Liverpool":{t:"c",c:"Angleterre",p:"Premier League",cl:"elite",s:91,a:92,d:86,h:0.38},
+"Manchester United":{t:"c",c:"Angleterre",p:"Premier League",cl:"fort",s:82,a:80,d:78,h:0.34},
+"Chelsea":{t:"c",c:"Angleterre",p:"Premier League",cl:"fort",s:82,a:81,d:80,h:0.32},
+"Tottenham":{t:"c",c:"Angleterre",p:"Premier League",cl:"fort",s:80,a:82,d:76,h:0.32},
+"Aston Villa":{t:"c",c:"Angleterre",p:"Premier League",cl:"fort",s:80,a:80,d:78,h:0.32},
+"Newcastle":{t:"c",c:"Angleterre",p:"Premier League",cl:"fort",s:80,a:78,d:80,h:0.34},
+"West Ham":{t:"c",c:"Angleterre",p:"Premier League",cl:"moyen",s:75,a:74,d:74,h:0.30},
+"Brighton":{t:"c",c:"Angleterre",p:"Premier League",cl:"moyen",s:75,a:76,d:72,h:0.28},
+"Crystal Palace":{t:"c",c:"Angleterre",p:"Premier League",cl:"moyen",s:72,a:70,d:72,h:0.28},
+"Wolves":{t:"c",c:"Angleterre",p:"Premier League",cl:"moyen",s:71,a:70,d:72,h:0.28},
+"Fulham":{t:"c",c:"Angleterre",p:"Premier League",cl:"moyen",s:71,a:72,d:70,h:0.28},
+"Brentford":{t:"c",c:"Angleterre",p:"Premier League",cl:"moyen",s:71,a:72,d:68,h:0.28},
+"Everton":{t:"c",c:"Angleterre",p:"Premier League",cl:"moyen",s:70,a:68,d:72,h:0.30},
+"Nottingham Forest":{t:"c",c:"Angleterre",p:"Premier League",cl:"moyen",s:70,a:70,d:68,h:0.30},
+"Bournemouth":{t:"c",c:"Angleterre",p:"Premier League",cl:"moyen",s:69,a:70,d:66,h:0.26},
+"Ipswich Town":{t:"c",c:"Angleterre",p:"Premier League",cl:"moyen",s:66,a:66,d:64,h:0.26},
+"Southampton":{t:"c",c:"Angleterre",p:"Premier League",cl:"moyen",s:65,a:64,d:64,h:0.26},
+"Leicester City":{t:"c",c:"Angleterre",p:"Premier League",cl:"moyen",s:66,a:66,d:64,h:0.28},
+"Leeds United":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:65,a:66,d:62,h:0.28},
+"Sheffield United":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:64,a:62,d:64,h:0.26},
+"Burnley":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:63,a:62,d:62,h:0.26},
+"Luton Town":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:62,a:62,d:60,h:0.24},
+"West Bromwich":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:63,a:62,d:62,h:0.26},
+"Norwich City":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:62,a:62,d:60,h:0.24},
+"Middlesbrough":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:62,a:62,d:60,h:0.24},
+"Coventry City":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:61,a:62,d:60,h:0.24},
+"Sunderland":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:62,a:62,d:60,h:0.24},
+"Hull City":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:60,a:60,d:58,h:0.22},
+"Blackburn":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:60,a:60,d:58,h:0.22},
+"Millwall":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:58,a:56,d:60,h:0.22},
+"Stoke City":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:60,a:58,d:60,h:0.22},
+"Swansea City":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:59,a:60,d:58,h:0.22},
+"Watford":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:60,a:60,d:58,h:0.22},
+"Portsmouth":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Derby County":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Bristol City":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Preston":{t:"c",c:"Angleterre",p:"Championship",cl:"faible",s:57,a:56,d:58,h:0.22},
+"Real Madrid":{t:"c",c:"Espagne",p:"LaLiga",cl:"elite",s:95,a:94,d:90,h:0.40},
+"FC Barcelone":{t:"c",c:"Espagne",p:"LaLiga",cl:"elite",s:93,a:94,d:86,h:0.38},
+"Atlético Madrid":{t:"c",c:"Espagne",p:"LaLiga",cl:"elite",s:87,a:84,d:90,h:0.38},
+"Real Sociedad":{t:"c",c:"Espagne",p:"LaLiga",cl:"fort",s:80,a:78,d:80,h:0.32},
+"Villarreal":{t:"c",c:"Espagne",p:"LaLiga",cl:"fort",s:80,a:80,d:78,h:0.30},
+"Athletic Bilbao":{t:"c",c:"Espagne",p:"LaLiga",cl:"fort",s:79,a:78,d:80,h:0.34},
+"Real Betis":{t:"c",c:"Espagne",p:"LaLiga",cl:"fort",s:78,a:78,d:76,h:0.30},
+"Sevilla":{t:"c",c:"Espagne",p:"LaLiga",cl:"fort",s:77,a:76,d:78,h:0.32},
+"Girona":{t:"c",c:"Espagne",p:"LaLiga",cl:"fort",s:78,a:80,d:74,h:0.28},
+"Valencia":{t:"c",c:"Espagne",p:"LaLiga",cl:"moyen",s:73,a:72,d:72,h:0.30},
+"Celta Vigo":{t:"c",c:"Espagne",p:"LaLiga",cl:"moyen",s:71,a:72,d:68,h:0.28},
+"Osasuna":{t:"c",c:"Espagne",p:"LaLiga",cl:"moyen",s:70,a:68,d:72,h:0.32},
+"Rayo Vallecano":{t:"c",c:"Espagne",p:"LaLiga",cl:"moyen",s:69,a:68,d:70,h:0.28},
+"Getafe":{t:"c",c:"Espagne",p:"LaLiga",cl:"moyen",s:69,a:64,d:74,h:0.30},
+"Mallorca":{t:"c",c:"Espagne",p:"LaLiga",cl:"moyen",s:69,a:66,d:72,h:0.30},
+"Las Palmas":{t:"c",c:"Espagne",p:"LaLiga",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Alavés":{t:"c",c:"Espagne",p:"LaLiga",cl:"moyen",s:67,a:66,d:68,h:0.28},
+"Espanyol":{t:"c",c:"Espagne",p:"LaLiga",cl:"moyen",s:66,a:66,d:66,h:0.26},
+"Valladolid":{t:"c",c:"Espagne",p:"LaLiga",cl:"moyen",s:65,a:64,d:66,h:0.26},
+"Leganés":{t:"c",c:"Espagne",p:"LaLiga",cl:"moyen",s:64,a:62,d:66,h:0.26},
+"Eibar":{t:"c",c:"Espagne",p:"Segunda",cl:"faible",s:62,a:62,d:60,h:0.24},
+"Real Oviedo":{t:"c",c:"Espagne",p:"Segunda",cl:"faible",s:61,a:60,d:62,h:0.24},
+"Sporting Gijón":{t:"c",c:"Espagne",p:"Segunda",cl:"faible",s:60,a:60,d:60,h:0.24},
+"Levante":{t:"c",c:"Espagne",p:"Segunda",cl:"faible",s:63,a:64,d:60,h:0.24},
+"Elche":{t:"c",c:"Espagne",p:"Segunda",cl:"faible",s:60,a:58,d:60,h:0.24},
+"Zaragoza":{t:"c",c:"Espagne",p:"Segunda",cl:"faible",s:60,a:60,d:58,h:0.24},
+"Tenerife":{t:"c",c:"Espagne",p:"Segunda",cl:"faible",s:59,a:58,d:60,h:0.24},
+"Racing Santander":{t:"c",c:"Espagne",p:"Segunda",cl:"faible",s:60,a:60,d:58,h:0.24},
+"Huesca":{t:"c",c:"Espagne",p:"Segunda",cl:"faible",s:58,a:58,d:58,h:0.22},
+"Burgos":{t:"c",c:"Espagne",p:"Segunda",cl:"faible",s:58,a:56,d:60,h:0.22},
+"Inter Milan":{t:"c",c:"Italie",p:"Serie A",cl:"elite",s:91,a:90,d:88,h:0.36},
+"Napoli":{t:"c",c:"Italie",p:"Serie A",cl:"fort",s:85,a:86,d:82,h:0.36},
+"Juventus":{t:"c",c:"Italie",p:"Serie A",cl:"fort",s:83,a:80,d:86,h:0.36},
+"AC Milan":{t:"c",c:"Italie",p:"Serie A",cl:"fort",s:82,a:82,d:80,h:0.34},
+"Atalanta":{t:"c",c:"Italie",p:"Serie A",cl:"fort",s:83,a:86,d:78,h:0.32},
+"SS Lazio":{t:"c",c:"Italie",p:"Serie A",cl:"fort",s:79,a:78,d:78,h:0.30},
+"AS Roma":{t:"c",c:"Italie",p:"Serie A",cl:"fort",s:79,a:78,d:78,h:0.32},
+"Fiorentina":{t:"c",c:"Italie",p:"Serie A",cl:"moyen",s:77,a:78,d:74,h:0.30},
+"Bologna":{t:"c",c:"Italie",p:"Serie A",cl:"moyen",s:76,a:76,d:76,h:0.30},
+"Torino":{t:"c",c:"Italie",p:"Serie A",cl:"moyen",s:72,a:70,d:74,h:0.28},
+"Monza":{t:"c",c:"Italie",p:"Serie A",cl:"moyen",s:70,a:68,d:70,h:0.26},
+"Udinese":{t:"c",c:"Italie",p:"Serie A",cl:"moyen",s:70,a:70,d:68,h:0.28},
+"Genoa":{t:"c",c:"Italie",p:"Serie A",cl:"moyen",s:68,a:66,d:70,h:0.28},
+"Lecce":{t:"c",c:"Italie",p:"Serie A",cl:"moyen",s:67,a:66,d:68,h:0.28},
+"Cagliari":{t:"c",c:"Italie",p:"Serie A",cl:"moyen",s:67,a:66,d:66,h:0.28},
+"Hellas Verona":{t:"c",c:"Italie",p:"Serie A",cl:"moyen",s:65,a:64,d:66,h:0.26},
+"Empoli":{t:"c",c:"Italie",p:"Serie A",cl:"moyen",s:66,a:64,d:68,h:0.26},
+"Parma":{t:"c",c:"Italie",p:"Serie A",cl:"moyen",s:65,a:64,d:64,h:0.26},
+"Como":{t:"c",c:"Italie",p:"Serie A",cl:"moyen",s:64,a:64,d:62,h:0.24},
+"Venezia":{t:"c",c:"Italie",p:"Serie A",cl:"moyen",s:63,a:62,d:62,h:0.24},
+"Palermo":{t:"c",c:"Italie",p:"Serie B",cl:"faible",s:62,a:62,d:60,h:0.24},
+"Sampdoria":{t:"c",c:"Italie",p:"Serie B",cl:"faible",s:60,a:60,d:58,h:0.24},
+"Bari":{t:"c",c:"Italie",p:"Serie B",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Cremonese":{t:"c",c:"Italie",p:"Serie B",cl:"faible",s:60,a:60,d:58,h:0.22},
+"Brescia":{t:"c",c:"Italie",p:"Serie B",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Cittadella":{t:"c",c:"Italie",p:"Serie B",cl:"faible",s:56,a:56,d:56,h:0.22},
+"Modena":{t:"c",c:"Italie",p:"Serie B",cl:"faible",s:56,a:56,d:56,h:0.22},
+"Bayern Munich":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"elite",s:94,a:96,d:88,h:0.40},
+"Bayer Leverkusen":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"elite",s:90,a:90,d:86,h:0.36},
+"Borussia Dortmund":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"fort",s:84,a:86,d:78,h:0.36},
+"RB Leipzig":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"fort",s:83,a:83,d:80,h:0.32},
+"Eintracht Frankfurt":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"fort",s:80,a:82,d:76,h:0.32},
+"VfB Stuttgart":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"fort",s:79,a:80,d:76,h:0.30},
+"Freiburg":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"moyen",s:74,a:74,d:74,h:0.30},
+"Werder Bremen":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"moyen",s:72,a:74,d:68,h:0.28},
+"Hoffenheim":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"moyen",s:72,a:72,d:70,h:0.26},
+"Union Berlin":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"moyen",s:71,a:68,d:74,h:0.30},
+"Mainz":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"moyen",s:71,a:70,d:72,h:0.28},
+"Augsburg":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"moyen",s:69,a:68,d:70,h:0.28},
+"Gladbach":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"moyen",s:72,a:72,d:70,h:0.30},
+"Wolfsburg":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"moyen",s:71,a:70,d:72,h:0.28},
+"St. Pauli":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"moyen",s:66,a:64,d:66,h:0.26},
+"Holstein Kiel":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"moyen",s:64,a:64,d:62,h:0.24},
+"Heidenheim":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"moyen",s:65,a:64,d:66,h:0.26},
+"Bochum":{t:"c",c:"Allemagne",p:"Bundesliga",cl:"faible",s:62,a:60,d:62,h:0.26},
+"Hamburger SV":{t:"c",c:"Allemagne",p:"2. Bundesliga",cl:"faible",s:66,a:68,d:62,h:0.28},
+"Schalke 04":{t:"c",c:"Allemagne",p:"2. Bundesliga",cl:"faible",s:64,a:64,d:62,h:0.28},
+"Hertha BSC":{t:"c",c:"Allemagne",p:"2. Bundesliga",cl:"faible",s:64,a:64,d:62,h:0.26},
+"Fortuna Düsseldorf":{t:"c",c:"Allemagne",p:"2. Bundesliga",cl:"faible",s:63,a:64,d:60,h:0.26},
+"Karlsruher SC":{t:"c",c:"Allemagne",p:"2. Bundesliga",cl:"faible",s:62,a:62,d:60,h:0.24},
+"Hannover 96":{t:"c",c:"Allemagne",p:"2. Bundesliga",cl:"faible",s:62,a:62,d:60,h:0.24},
+"Nürnberg":{t:"c",c:"Allemagne",p:"2. Bundesliga",cl:"faible",s:60,a:60,d:58,h:0.24},
+"Paderborn":{t:"c",c:"Allemagne",p:"2. Bundesliga",cl:"faible",s:60,a:62,d:58,h:0.24},
+"Kaiserslautern":{t:"c",c:"Allemagne",p:"2. Bundesliga",cl:"faible",s:60,a:60,d:58,h:0.24},
+"Paris Saint-Germain":{t:"c",c:"France",p:"Ligue 1",cl:"elite",s:92,a:94,d:84,h:0.38},
+"Monaco":{t:"c",c:"France",p:"Ligue 1",cl:"fort",s:80,a:82,d:76,h:0.30},
+"Marseille":{t:"c",c:"France",p:"Ligue 1",cl:"fort",s:80,a:80,d:78,h:0.34},
+"Lille":{t:"c",c:"France",p:"Ligue 1",cl:"fort",s:78,a:78,d:78,h:0.30},
+"Nice":{t:"c",c:"France",p:"Ligue 1",cl:"fort",s:77,a:76,d:78,h:0.28},
+"Lens":{t:"c",c:"France",p:"Ligue 1",cl:"fort",s:77,a:76,d:78,h:0.30},
+"Lyon":{t:"c",c:"France",p:"Ligue 1",cl:"fort",s:78,a:80,d:74,h:0.32},
+"Rennes":{t:"c",c:"France",p:"Ligue 1",cl:"moyen",s:74,a:74,d:72,h:0.28},
+"Toulouse":{t:"c",c:"France",p:"Ligue 1",cl:"moyen",s:71,a:70,d:72,h:0.26},
+"Strasbourg":{t:"c",c:"France",p:"Ligue 1",cl:"moyen",s:70,a:70,d:68,h:0.26},
+"Reims":{t:"c",c:"France",p:"Ligue 1",cl:"moyen",s:70,a:68,d:72,h:0.26},
+"Auxerre":{t:"c",c:"France",p:"Ligue 1",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Montpellier":{t:"c",c:"France",p:"Ligue 1",cl:"moyen",s:67,a:68,d:64,h:0.26},
+"Nantes":{t:"c",c:"France",p:"Ligue 1",cl:"moyen",s:67,a:66,d:68,h:0.28},
+"Brest":{t:"c",c:"France",p:"Ligue 1",cl:"moyen",s:72,a:72,d:72,h:0.28},
+"Angers":{t:"c",c:"France",p:"Ligue 1",cl:"moyen",s:64,a:62,d:64,h:0.24},
+"Saint-Étienne":{t:"c",c:"France",p:"Ligue 1",cl:"moyen",s:64,a:62,d:64,h:0.28},
+"Le Havre":{t:"c",c:"France",p:"Ligue 1",cl:"moyen",s:64,a:62,d:66,h:0.26},
+"Paris FC":{t:"c",c:"France",p:"Ligue 2",cl:"faible",s:62,a:62,d:60,h:0.24},
+"Caen":{t:"c",c:"France",p:"Ligue 2",cl:"faible",s:60,a:60,d:58,h:0.24},
+"Guingamp":{t:"c",c:"France",p:"Ligue 2",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Bordeaux":{t:"c",c:"France",p:"Ligue 2",cl:"faible",s:60,a:60,d:58,h:0.24},
+"Laval":{t:"c",c:"France",p:"Ligue 2",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Bastia":{t:"c",c:"France",p:"Ligue 2",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Benfica":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"fort",s:83,a:85,d:78,h:0.34},
+"Porto":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"fort",s:83,a:84,d:80,h:0.36},
+"Sporting CP":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"fort",s:82,a:84,d:78,h:0.34},
+"Braga":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"moyen",s:75,a:76,d:72,h:0.28},
+"Vitória Guimarães":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"moyen",s:71,a:70,d:70,h:0.26},
+"Boavista":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"moyen",s:66,a:64,d:68,h:0.24},
+"Moreirense":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Famalicão":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"moyen",s:65,a:66,d:62,h:0.24},
+"Casa Pia":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"moyen",s:64,a:62,d:64,h:0.22},
+"Estoril":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Rio Ave":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Gil Vicente":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"moyen",s:63,a:62,d:62,h:0.22},
+"Arouca":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Farense":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"moyen",s:62,a:62,d:60,h:0.22},
+"Estrela Amadora":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"moyen",s:62,a:60,d:62,h:0.22},
+"Nacional":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"moyen",s:62,a:60,d:62,h:0.22},
+"AVS":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"moyen",s:60,a:58,d:60,h:0.22},
+"Santa Clara":{t:"c",c:"Portugal",p:"Primeira Liga",cl:"moyen",s:64,a:64,d:62,h:0.24},
+"PSV Eindhoven":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"fort",s:82,a:84,d:78,h:0.34},
+"Ajax":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"fort",s:80,a:82,d:76,h:0.34},
+"Feyenoord":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"fort",s:79,a:80,d:76,h:0.32},
+"AZ Alkmaar":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"moyen",s:74,a:76,d:72,h:0.28},
+"Twente":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"moyen",s:73,a:74,d:70,h:0.28},
+"Utrecht":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"moyen",s:72,a:72,d:70,h:0.26},
+"Heerenveen":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Sparta Rotterdam":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Go Ahead Eagles":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"NEC Nijmegen":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"PEC Zwolle":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Fortuna Sittard":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Waalwijk":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"moyen",s:62,a:60,d:62,h:0.22},
+"Heracles":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"moyen",s:62,a:62,d:60,h:0.22},
+"Almere City":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"moyen",s:60,a:60,d:58,h:0.20},
+"Willem II":{t:"c",c:"Pays-Bas",p:"Eredivisie",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Club Brugge":{t:"c",c:"Belgique",p:"Jupiler Pro League",cl:"fort",s:79,a:80,d:76,h:0.32},
+"Union SG":{t:"c",c:"Belgique",p:"Jupiler Pro League",cl:"fort",s:77,a:78,d:74,h:0.28},
+"Anderlecht":{t:"c",c:"Belgique",p:"Jupiler Pro League",cl:"moyen",s:75,a:74,d:74,h:0.30},
+"Genk":{t:"c",c:"Belgique",p:"Jupiler Pro League",cl:"moyen",s:73,a:74,d:70,h:0.28},
+"Antwerp":{t:"c",c:"Belgique",p:"Jupiler Pro League",cl:"moyen",s:74,a:74,d:72,h:0.30},
+"Gent":{t:"c",c:"Belgique",p:"Jupiler Pro League",cl:"moyen",s:72,a:72,d:70,h:0.26},
+"Cercle Brugge":{t:"c",c:"Belgique",p:"Jupiler Pro League",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Mechelen":{t:"c",c:"Belgique",p:"Jupiler Pro League",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Standard Liège":{t:"c",c:"Belgique",p:"Jupiler Pro League",cl:"moyen",s:70,a:70,d:68,h:0.26},
+"Sint-Truiden":{t:"c",c:"Belgique",p:"Jupiler Pro League",cl:"moyen",s:64,a:62,d:64,h:0.22},
+"OH Leuven":{t:"c",c:"Belgique",p:"Jupiler Pro League",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Westerlo":{t:"c",c:"Belgique",p:"Jupiler Pro League",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Kortrijk":{t:"c",c:"Belgique",p:"Jupiler Pro League",cl:"moyen",s:62,a:60,d:62,h:0.22},
+"Dender":{t:"c",c:"Belgique",p:"Jupiler Pro League",cl:"moyen",s:60,a:60,d:58,h:0.20},
+"Galatasaray":{t:"c",c:"Turquie",p:"Süper Lig",cl:"fort",s:80,a:82,d:76,h:0.36},
+"Fenerbahçe":{t:"c",c:"Turquie",p:"Süper Lig",cl:"fort",s:80,a:82,d:76,h:0.36},
+"Beşiktaş":{t:"c",c:"Turquie",p:"Süper Lig",cl:"fort",s:76,a:76,d:74,h:0.34},
+"Trabzonspor":{t:"c",c:"Turquie",p:"Süper Lig",cl:"moyen",s:73,a:74,d:70,h:0.30},
+"Başakşehir":{t:"c",c:"Turquie",p:"Süper Lig",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"Antalyaspor":{t:"c",c:"Turquie",p:"Süper Lig",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Konyaspor":{t:"c",c:"Turquie",p:"Süper Lig",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Adana Demirspor":{t:"c",c:"Turquie",p:"Süper Lig",cl:"moyen",s:68,a:70,d:64,h:0.26},
+"Sivasspor":{t:"c",c:"Turquie",p:"Süper Lig",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Kayserispor":{t:"c",c:"Turquie",p:"Süper Lig",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Alanyaspor":{t:"c",c:"Turquie",p:"Süper Lig",cl:"moyen",s:65,a:66,d:62,h:0.24},
+"Kasımpaşa":{t:"c",c:"Turquie",p:"Süper Lig",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Rizespor":{t:"c",c:"Turquie",p:"Süper Lig",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Gaziantep FK":{t:"c",c:"Turquie",p:"Süper Lig",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Hatayspor":{t:"c",c:"Turquie",p:"Süper Lig",cl:"moyen",s:62,a:62,d:60,h:0.22},
+"Samsunspor":{t:"c",c:"Turquie",p:"Süper Lig",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Bodrum FK":{t:"c",c:"Turquie",p:"Süper Lig",cl:"moyen",s:62,a:62,d:60,h:0.20},
+"Eyüpspor":{t:"c",c:"Turquie",p:"Süper Lig",cl:"moyen",s:62,a:62,d:60,h:0.20},
+"Celtic":{t:"c",c:"Écosse",p:"Scottish Premiership",cl:"fort",s:78,a:80,d:74,h:0.34},
+"Rangers":{t:"c",c:"Écosse",p:"Scottish Premiership",cl:"fort",s:76,a:78,d:74,h:0.34},
+"Hearts":{t:"c",c:"Écosse",p:"Scottish Premiership",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Aberdeen":{t:"c",c:"Écosse",p:"Scottish Premiership",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Hibernian":{t:"c",c:"Écosse",p:"Scottish Premiership",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Dundee United":{t:"c",c:"Écosse",p:"Scottish Premiership",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Kilmarnock":{t:"c",c:"Écosse",p:"Scottish Premiership",cl:"moyen",s:64,a:62,d:64,h:0.22},
+"St Mirren":{t:"c",c:"Écosse",p:"Scottish Premiership",cl:"moyen",s:63,a:62,d:62,h:0.22},
+"Motherwell":{t:"c",c:"Écosse",p:"Scottish Premiership",cl:"moyen",s:63,a:62,d:62,h:0.22},
+"Red Bull Salzburg":{t:"c",c:"Autriche",p:"Bundesliga Aut.",cl:"fort",s:79,a:82,d:74,h:0.32},
+"Sturm Graz":{t:"c",c:"Autriche",p:"Bundesliga Aut.",cl:"moyen",s:74,a:74,d:72,h:0.28},
+"Rapid Wien":{t:"c",c:"Autriche",p:"Bundesliga Aut.",cl:"moyen",s:71,a:70,d:70,h:0.28},
+"LASK":{t:"c",c:"Autriche",p:"Bundesliga Aut.",cl:"moyen",s:69,a:68,d:68,h:0.26},
+"Austria Wien":{t:"c",c:"Autriche",p:"Bundesliga Aut.",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Young Boys":{t:"c",c:"Suisse",p:"Super League",cl:"moyen",s:76,a:76,d:74,h:0.32},
+"Servette":{t:"c",c:"Suisse",p:"Super League",cl:"moyen",s:70,a:70,d:68,h:0.26},
+"FC Lugano":{t:"c",c:"Suisse",p:"Super League",cl:"moyen",s:70,a:70,d:68,h:0.26},
+"FC Bâle":{t:"c",c:"Suisse",p:"Super League",cl:"moyen",s:70,a:70,d:68,h:0.28},
+"FC Zurich":{t:"c",c:"Suisse",p:"Super League",cl:"moyen",s:69,a:68,d:68,h:0.26},
+"St. Gallen":{t:"c",c:"Suisse",p:"Super League",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Luzern":{t:"c",c:"Suisse",p:"Super League",cl:"moyen",s:67,a:68,d:64,h:0.24},
+"Grasshoppers":{t:"c",c:"Suisse",p:"Super League",cl:"moyen",s:65,a:64,d:64,h:0.24},
+"Lausanne-Sport":{t:"c",c:"Suisse",p:"Super League",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Yverdon":{t:"c",c:"Suisse",p:"Super League",cl:"moyen",s:63,a:62,d:62,h:0.22},
+"Winterthur":{t:"c",c:"Suisse",p:"Super League",cl:"moyen",s:62,a:62,d:60,h:0.22},
+"FC Copenhagen":{t:"c",c:"Danemark",p:"Superliga",cl:"moyen",s:76,a:76,d:74,h:0.32},
+"Midtjylland":{t:"c",c:"Danemark",p:"Superliga",cl:"moyen",s:72,a:74,d:68,h:0.28},
+"Brøndby":{t:"c",c:"Danemark",p:"Superliga",cl:"moyen",s:70,a:70,d:68,h:0.26},
+"Nordsjælland":{t:"c",c:"Danemark",p:"Superliga",cl:"moyen",s:70,a:72,d:66,h:0.26},
+"Aalborg":{t:"c",c:"Danemark",p:"Superliga",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"AGF Aarhus":{t:"c",c:"Danemark",p:"Superliga",cl:"moyen",s:67,a:66,d:66,h:0.24},
+"Silkeborg":{t:"c",c:"Danemark",p:"Superliga",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Randers":{t:"c",c:"Danemark",p:"Superliga",cl:"moyen",s:65,a:64,d:64,h:0.22},
+"Malmö FF":{t:"c",c:"Suède",p:"Allsvenskan",cl:"moyen",s:72,a:74,d:70,h:0.30},
+"Djurgårdens":{t:"c",c:"Suède",p:"Allsvenskan",cl:"moyen",s:70,a:70,d:68,h:0.28},
+"AIK":{t:"c",c:"Suède",p:"Allsvenskan",cl:"moyen",s:68,a:66,d:68,h:0.28},
+"Häcken":{t:"c",c:"Suède",p:"Allsvenskan",cl:"moyen",s:68,a:70,d:64,h:0.26},
+"Hammarby":{t:"c",c:"Suède",p:"Allsvenskan",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Elfsborg":{t:"c",c:"Suède",p:"Allsvenskan",cl:"moyen",s:67,a:68,d:64,h:0.24},
+"IFK Göteborg":{t:"c",c:"Suède",p:"Allsvenskan",cl:"moyen",s:66,a:66,d:64,h:0.26},
+"Bodø/Glimt":{t:"c",c:"Norvège",p:"Eliteserien",cl:"moyen",s:76,a:78,d:72,h:0.34},
+"Molde":{t:"c",c:"Norvège",p:"Eliteserien",cl:"moyen",s:72,a:74,d:68,h:0.30},
+"Rosenborg":{t:"c",c:"Norvège",p:"Eliteserien",cl:"moyen",s:70,a:70,d:68,h:0.30},
+"Brann":{t:"c",c:"Norvège",p:"Eliteserien",cl:"moyen",s:68,a:68,d:66,h:0.28},
+"Viking":{t:"c",c:"Norvège",p:"Eliteserien",cl:"moyen",s:68,a:68,d:66,h:0.28},
+"Lillestrøm":{t:"c",c:"Norvège",p:"Eliteserien",cl:"moyen",s:66,a:66,d:64,h:0.26},
+"Dinamo Zagreb":{t:"c",c:"Croatie",p:"HNL",cl:"moyen",s:76,a:78,d:72,h:0.34},
+"Hajduk Split":{t:"c",c:"Croatie",p:"HNL",cl:"moyen",s:70,a:72,d:68,h:0.30},
+"Rijeka":{t:"c",c:"Croatie",p:"HNL",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Osijek":{t:"c",c:"Croatie",p:"HNL",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Crvena Zvezda":{t:"c",c:"Serbie",p:"SuperLiga",cl:"moyen",s:74,a:76,d:70,h:0.32},
+"Partizan":{t:"c",c:"Serbie",p:"SuperLiga",cl:"moyen",s:70,a:70,d:68,h:0.28},
+"Vojvodina":{t:"c",c:"Serbie",p:"SuperLiga",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Čukarički":{t:"c",c:"Serbie",p:"SuperLiga",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"FCSB":{t:"c",c:"Roumanie",p:"Liga 1",cl:"moyen",s:72,a:72,d:70,h:0.30},
+"CFR Cluj":{t:"c",c:"Roumanie",p:"Liga 1",cl:"moyen",s:70,a:68,d:72,h:0.28},
+"Craiova":{t:"c",c:"Roumanie",p:"Liga 1",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Rapid București":{t:"c",c:"Roumanie",p:"Liga 1",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Farul Constanța":{t:"c",c:"Roumanie",p:"Liga 1",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Sepsi":{t:"c",c:"Roumanie",p:"Liga 1",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Olympiakos":{t:"c",c:"Grèce",p:"Super League",cl:"moyen",s:74,a:74,d:72,h:0.32},
+"Panathinaikos":{t:"c",c:"Grèce",p:"Super League",cl:"moyen",s:72,a:72,d:70,h:0.30},
+"PAOK":{t:"c",c:"Grèce",p:"Super League",cl:"moyen",s:72,a:74,d:68,h:0.30},
+"AEK Athens":{t:"c",c:"Grèce",p:"Super League",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"Aris":{t:"c",c:"Grèce",p:"Super League",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Slavia Prague":{t:"c",c:"Tchéquie",p:"First League",cl:"moyen",s:76,a:76,d:74,h:0.32},
+"Sparta Prague":{t:"c",c:"Tchéquie",p:"First League",cl:"moyen",s:74,a:76,d:70,h:0.30},
+"Viktoria Plzeň":{t:"c",c:"Tchéquie",p:"First League",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"Ferencváros":{t:"c",c:"Hongrie",p:"NB I",cl:"moyen",s:74,a:74,d:72,h:0.32},
+"Puskás Akadémia":{t:"c",c:"Hongrie",p:"NB I",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Debrecen":{t:"c",c:"Hongrie",p:"NB I",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Legia Varsovie":{t:"c",c:"Pologne",p:"Ekstraklasa",cl:"moyen",s:72,a:72,d:70,h:0.30},
+"Lech Poznań":{t:"c",c:"Pologne",p:"Ekstraklasa",cl:"moyen",s:72,a:72,d:70,h:0.30},
+"Raków":{t:"c",c:"Pologne",p:"Ekstraklasa",cl:"moyen",s:70,a:70,d:68,h:0.28},
+"Jagiellonia":{t:"c",c:"Pologne",p:"Ekstraklasa",cl:"moyen",s:70,a:72,d:66,h:0.28},
+"Pogoń Szczecin":{t:"c",c:"Pologne",p:"Ekstraklasa",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Śląsk Wrocław":{t:"c",c:"Pologne",p:"Ekstraklasa",cl:"moyen",s:67,a:68,d:64,h:0.24},
+"Ludogorets":{t:"c",c:"Bulgarie",p:"First League",cl:"moyen",s:72,a:74,d:68,h:0.30},
+"CSKA Sofia":{t:"c",c:"Bulgarie",p:"First League",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Levski Sofia":{t:"c",c:"Bulgarie",p:"First League",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Flamengo":{t:"c",c:"Brésil",p:"Brasileirão",cl:"fort",s:82,a:84,d:78,h:0.38},
+"Palmeiras":{t:"c",c:"Brésil",p:"Brasileirão",cl:"fort",s:82,a:82,d:80,h:0.38},
+"Botafogo":{t:"c",c:"Brésil",p:"Brasileirão",cl:"fort",s:78,a:78,d:76,h:0.34},
+"Fluminense":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:75,a:76,d:72,h:0.32},
+"Grêmio":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:74,a:76,d:70,h:0.32},
+"Internacional":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:74,a:74,d:74,h:0.30},
+"São Paulo":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:76,a:76,d:74,h:0.32},
+"Atlético Mineiro":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:75,a:76,d:72,h:0.30},
+"Corinthians":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:74,a:74,d:72,h:0.30},
+"Cruzeiro":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:73,a:72,d:72,h:0.28},
+"Vasco da Gama":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"Bahia":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"Fortaleza":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"Athletico Paranaense":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"RB Bragantino":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:70,a:70,d:68,h:0.26},
+"Santos":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:70,a:70,d:68,h:0.28},
+"Vitória":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Criciúma":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Cuiabá":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Juventude":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Atlético Goianiense":{t:"c",c:"Brésil",p:"Brasileirão",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"River Plate":{t:"c",c:"Argentine",p:"Primera División",cl:"fort",s:82,a:84,d:78,h:0.40},
+"Boca Juniors":{t:"c",c:"Argentine",p:"Primera División",cl:"fort",s:80,a:80,d:80,h:0.40},
+"Racing Club":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:74,a:74,d:72,h:0.30},
+"Independiente":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"Estudiantes":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"San Lorenzo":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:71,a:70,d:70,h:0.28},
+"Vélez Sarsfield":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"Talleres":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:72,a:74,d:68,h:0.28},
+"Defensa y Justicia":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Huracán":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Newell's Old Boys":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Rosario Central":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Lanús":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Argentinos Juniors":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:67,a:68,d:64,h:0.24},
+"Banfield":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Gimnasia La Plata":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Godoy Cruz":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Platense":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Sarmiento":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Central Córdoba":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Independiente Rivadavia":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Deportivo Riestra":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:62,a:62,d:60,h:0.20},
+"Instituto":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Tigre":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Unión Santa Fe":{t:"c",c:"Argentine",p:"Primera División",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Club América":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:76,a:76,d:74,h:0.34},
+"Tigres UANL":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:76,a:76,d:74,h:0.34},
+"Monterrey":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:75,a:76,d:72,h:0.32},
+"Cruz Azul":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:74,a:74,d:72,h:0.30},
+"Chivas":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:73,a:72,d:72,h:0.30},
+"Pumas UNAM":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"Toluca":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"León":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"Santos Laguna":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:70,a:70,d:68,h:0.26},
+"Pachuca":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:70,a:72,d:66,h:0.26},
+"Atlas":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Tijuana":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Necaxa":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Mazatlán":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:66,a:66,d:64,h:0.22},
+"Querétaro":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:66,a:66,d:64,h:0.22},
+"Atlético San Luis":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:66,a:66,d:64,h:0.22},
+"FC Juárez":{t:"c",c:"Mexique",p:"Liga MX",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Inter Miami":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:74,a:76,d:70,h:0.28},
+"LA Galaxy":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:72,a:74,d:68,h:0.26},
+"Los Angeles FC":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:74,a:76,d:70,h:0.28},
+"Seattle Sounders":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:72,a:72,d:70,h:0.26},
+"Columbus Crew":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:72,a:72,d:70,h:0.26},
+"FC Cincinnati":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:72,a:72,d:70,h:0.26},
+"Philadelphia Union":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:70,a:70,d:68,h:0.24},
+"New York City FC":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:70,a:70,d:68,h:0.24},
+"New York Red Bulls":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:70,a:70,d:68,h:0.24},
+"Atlanta United":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:68,a:70,d:64,h:0.24},
+"Orlando City":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Nashville SC":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Portland Timbers":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Real Salt Lake":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Houston Dynamo":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Minnesota United":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:66,a:66,d:64,h:0.22},
+"Charlotte FC":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:66,a:66,d:64,h:0.22},
+"St. Louis City":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:66,a:66,d:64,h:0.22},
+"CF Montréal":{t:"c",c:"Canada",p:"MLS",cl:"moyen",s:66,a:66,d:64,h:0.22},
+"Toronto FC":{t:"c",c:"Canada",p:"MLS",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Vancouver Whitecaps":{t:"c",c:"Canada",p:"MLS",cl:"moyen",s:66,a:66,d:64,h:0.22},
+"Colorado Rapids":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"FC Dallas":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Austin FC":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"San Jose Earthquakes":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:62,a:62,d:60,h:0.20},
+"Chicago Fire":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:62,a:62,d:60,h:0.20},
+"DC United":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:62,a:62,d:60,h:0.20},
+"New England":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Sporting KC":{t:"c",c:"États-Unis",p:"MLS",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Al Hilal":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"fort",s:82,a:84,d:78,h:0.36},
+"Al Nassr":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"fort",s:80,a:82,d:76,h:0.34},
+"Al Ahli":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"fort",s:78,a:78,d:76,h:0.32},
+"Al Ittihad":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"fort",s:78,a:78,d:76,h:0.32},
+"Al Shabab":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"Al Taawoun":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Al Ettifaq":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Al Fateh":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Al Raed":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Al Wehda":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Al Riyadh":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Al Khaleej":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Al Okhdood":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"moyen",s:62,a:62,d:60,h:0.20},
+"Al Feiha":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Damac":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Al Tai":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"moyen",s:62,a:62,d:60,h:0.20},
+"Al Akhdoud":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"moyen",s:62,a:62,d:60,h:0.20},
+"Al Orubah":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"moyen",s:62,a:62,d:60,h:0.20},
+"Vissel Kobe":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:74,a:74,d:72,h:0.28},
+"Yokohama F. Marinos":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:73,a:74,d:70,h:0.28},
+"Kawasaki Frontale":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:74,a:76,d:70,h:0.28},
+"Urawa Red Diamonds":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"Kashima Antlers":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"Nagoya Grampus":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:70,a:70,d:68,h:0.26},
+"Cerezo Osaka":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:70,a:70,d:68,h:0.26},
+"Sanfrecce Hiroshima":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:72,a:72,d:70,h:0.26},
+"Gamba Osaka":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:70,a:70,d:68,h:0.26},
+"FC Tokyo":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Hokkaido Consadole Sapporo":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Shimizu S-Pulse":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Kyoto Sanga":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Shonan Bellmare":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Avispa Fukuoka":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:66,a:64,d:66,h:0.24},
+"Jubilo Iwata":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Sagan Tosu":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Kashiwa Reysol":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Machida Zelvia":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Albirex Niigata":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Tokyo Verdy":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:62,a:62,d:60,h:0.20},
+"Ulsan HD":{t:"c",c:"Corée du Sud",p:"K League 1",cl:"moyen",s:74,a:74,d:72,h:0.30},
+"Jeonbuk Hyundai":{t:"c",c:"Corée du Sud",p:"K League 1",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"Pohang Steelers":{t:"c",c:"Corée du Sud",p:"K League 1",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"FC Seoul":{t:"c",c:"Corée du Sud",p:"K League 1",cl:"moyen",s:70,a:70,d:68,h:0.26},
+"Suwon Samsung Bluewings":{t:"c",c:"Corée du Sud",p:"K League 1",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Daegu FC":{t:"c",c:"Corée du Sud",p:"K League 1",cl:"moyen",s:68,a:68,d:66,h:0.24},
+"Gangwon FC":{t:"c",c:"Corée du Sud",p:"K League 1",cl:"moyen",s:66,a:66,d:64,h:0.22},
+"Incheon United":{t:"c",c:"Corée du Sud",p:"K League 1",cl:"moyen",s:66,a:66,d:64,h:0.22},
+"Gwangju FC":{t:"c",c:"Corée du Sud",p:"K League 1",cl:"moyen",s:66,a:66,d:64,h:0.22},
+"Jeju United":{t:"c",c:"Corée du Sud",p:"K League 1",cl:"moyen",s:66,a:66,d:64,h:0.22},
+"Daejeon Hana Citizen":{t:"c",c:"Corée du Sud",p:"K League 1",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Suwon FC":{t:"c",c:"Corée du Sud",p:"K League 1",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Melbourne Victory":{t:"c",c:"Australie",p:"A-League",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Melbourne City":{t:"c",c:"Australie",p:"A-League",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Sydney FC":{t:"c",c:"Australie",p:"A-League",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Western Sydney":{t:"c",c:"Australie",p:"A-League",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Adelaide United":{t:"c",c:"Australie",p:"A-League",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Brisbane Roar":{t:"c",c:"Australie",p:"A-League",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Central Coast Mariners":{t:"c",c:"Australie",p:"A-League",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Wellington Phoenix":{t:"c",c:"Nouvelle-Zélande",p:"A-League",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Perth Glory":{t:"c",c:"Australie",p:"A-League",cl:"moyen",s:62,a:62,d:60,h:0.20},
+"Newcastle Jets":{t:"c",c:"Australie",p:"A-League",cl:"moyen",s:62,a:62,d:60,h:0.20},
+"Al Ahly":{t:"c",c:"Égypte",p:"Premier League Égypte",cl:"fort",s:80,a:80,d:78,h:0.40},
+"Zamalek":{t:"c",c:"Égypte",p:"Premier League Égypte",cl:"fort",s:76,a:76,d:74,h:0.36},
+"Pyramids FC":{t:"c",c:"Égypte",p:"Premier League Égypte",cl:"moyen",s:74,a:76,d:70,h:0.32},
+"Ismaily":{t:"c",c:"Égypte",p:"Premier League Égypte",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Future FC":{t:"c",c:"Égypte",p:"Premier League Égypte",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Al Masry":{t:"c",c:"Égypte",p:"Premier League Égypte",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Ceramica Cleopatra":{t:"c",c:"Égypte",p:"Premier League Égypte",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"ENPPI":{t:"c",c:"Égypte",p:"Premier League Égypte",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Espérance Tunis":{t:"c",c:"Tunisie",p:"Ligue I Pro",cl:"fort",s:78,a:78,d:76,h:0.38},
+"Étoile du Sahel":{t:"c",c:"Tunisie",p:"Ligue I Pro",cl:"moyen",s:73,a:72,d:72,h:0.32},
+"Club Africain":{t:"c",c:"Tunisie",p:"Ligue I Pro",cl:"moyen",s:70,a:70,d:68,h:0.30},
+"US Monastirienne":{t:"c",c:"Tunisie",p:"Ligue I Pro",cl:"moyen",s:68,a:68,d:66,h:0.28},
+"CS Sfaxien":{t:"c",c:"Tunisie",p:"Ligue I Pro",cl:"moyen",s:68,a:68,d:66,h:0.28},
+"CA Bizertin":{t:"c",c:"Tunisie",p:"Ligue I Pro",cl:"moyen",s:66,a:66,d:64,h:0.26},
+"Wydad":{t:"c",c:"Maroc",p:"Botola Pro",cl:"fort",s:78,a:78,d:76,h:0.38},
+"Raja Casablanca":{t:"c",c:"Maroc",p:"Botola Pro",cl:"fort",s:78,a:78,d:76,h:0.38},
+"FAR Rabat":{t:"c",c:"Maroc",p:"Botola Pro",cl:"moyen",s:72,a:72,d:70,h:0.30},
+"FUS Rabat":{t:"c",c:"Maroc",p:"Botola Pro",cl:"moyen",s:68,a:68,d:66,h:0.28},
+"RS Berkane":{t:"c",c:"Maroc",p:"Botola Pro",cl:"moyen",s:70,a:70,d:68,h:0.30},
+"Ittihad Tanger":{t:"c",c:"Maroc",p:"Botola Pro",cl:"moyen",s:66,a:66,d:64,h:0.26},
+"Hassania Agadir":{t:"c",c:"Maroc",p:"Botola Pro",cl:"moyen",s:64,a:64,d:62,h:0.24},
+"Moghreb Tétouan":{t:"c",c:"Maroc",p:"Botola Pro",cl:"moyen",s:64,a:64,d:62,h:0.24},
+"Maghreb Fès":{t:"c",c:"Maroc",p:"Botola Pro",cl:"moyen",s:66,a:66,d:64,h:0.26},
+"Olympique Khouribga":{t:"c",c:"Maroc",p:"Botola Pro",cl:"moyen",s:62,a:62,d:60,h:0.22},
+"CR Belouizdad":{t:"c",c:"Algérie",p:"Ligue 1 Algérie",cl:"moyen",s:72,a:72,d:70,h:0.32},
+"JS Kabylie":{t:"c",c:"Algérie",p:"Ligue 1 Algérie",cl:"moyen",s:70,a:70,d:68,h:0.30},
+"MC Alger":{t:"c",c:"Algérie",p:"Ligue 1 Algérie",cl:"moyen",s:70,a:70,d:68,h:0.30},
+"USM Alger":{t:"c",c:"Algérie",p:"Ligue 1 Algérie",cl:"moyen",s:70,a:70,d:68,h:0.30},
+"ES Sétif":{t:"c",c:"Algérie",p:"Ligue 1 Algérie",cl:"moyen",s:68,a:68,d:66,h:0.28},
+"Paradou AC":{t:"c",c:"Algérie",p:"Ligue 1 Algérie",cl:"moyen",s:66,a:66,d:64,h:0.26},
+"CS Constantine":{t:"c",c:"Algérie",p:"Ligue 1 Algérie",cl:"moyen",s:66,a:66,d:64,h:0.26},
+"MC Oran":{t:"c",c:"Algérie",p:"Ligue 1 Algérie",cl:"moyen",s:66,a:66,d:64,h:0.26},
+"ASO Chlef":{t:"c",c:"Algérie",p:"Ligue 1 Algérie",cl:"moyen",s:64,a:64,d:62,h:0.24},
+"Mamelodi Sundowns":{t:"c",c:"Afrique du Sud",p:"PSL",cl:"fort",s:78,a:80,d:74,h:0.36},
+"Orlando Pirates":{t:"c",c:"Afrique du Sud",p:"PSL",cl:"moyen",s:72,a:72,d:70,h:0.30},
+"Kaizer Chiefs":{t:"c",c:"Afrique du Sud",p:"PSL",cl:"moyen",s:70,a:70,d:68,h:0.30},
+"SuperSport United":{t:"c",c:"Afrique du Sud",p:"PSL",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Cape Town City":{t:"c",c:"Afrique du Sud",p:"PSL",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Stellenbosch":{t:"c",c:"Afrique du Sud",p:"PSL",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"TP Mazembe":{t:"c",c:"RD Congo",p:"Linafoot",cl:"moyen",s:74,a:74,d:72,h:0.38},
+"AS Vita Club":{t:"c",c:"RD Congo",p:"Linafoot",cl:"moyen",s:70,a:70,d:68,h:0.34},
+"DC Motema Pembe":{t:"c",c:"RD Congo",p:"Linafoot",cl:"faible",s:64,a:64,d:62,h:0.28},
+"FC Saint-Éloi Lupopo":{t:"c",c:"RD Congo",p:"Linafoot",cl:"faible",s:62,a:62,d:60,h:0.26},
+"AS Maniema Union":{t:"c",c:"RD Congo",p:"Linafoot",cl:"faible",s:62,a:62,d:60,h:0.26},
+"CS Don Bosco":{t:"c",c:"RD Congo",p:"Linafoot",cl:"faible",s:58,a:58,d:56,h:0.22},
+"JS Bazano":{t:"c",c:"RD Congo",p:"Linafoot",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Sanga Balende":{t:"c",c:"RD Congo",p:"Linafoot",cl:"faible",s:56,a:56,d:54,h:0.20},
+"FC Renaissance":{t:"c",c:"RD Congo",p:"Linafoot",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Enyimba":{t:"c",c:"Nigeria",p:"NPFL",cl:"moyen",s:70,a:70,d:68,h:0.32},
+"Rivers United":{t:"c",c:"Nigeria",p:"NPFL",cl:"moyen",s:68,a:68,d:66,h:0.28},
+"Remo Stars":{t:"c",c:"Nigeria",p:"NPFL",cl:"moyen",s:64,a:64,d:62,h:0.24},
+"Plateau United":{t:"c",c:"Nigeria",p:"NPFL",cl:"moyen",s:64,a:64,d:62,h:0.24},
+"Kano Pillars":{t:"c",c:"Nigeria",p:"NPFL",cl:"moyen",s:64,a:64,d:62,h:0.24},
+"Akwa United":{t:"c",c:"Nigeria",p:"NPFL",cl:"moyen",s:64,a:64,d:62,h:0.24},
+"Shooting Stars":{t:"c",c:"Nigeria",p:"NPFL",cl:"moyen",s:62,a:62,d:60,h:0.22},
+"Hearts of Oak":{t:"c",c:"Ghana",p:"GPL",cl:"moyen",s:68,a:68,d:66,h:0.30},
+"Asante Kotoko":{t:"c",c:"Ghana",p:"GPL",cl:"moyen",s:68,a:68,d:66,h:0.30},
+"Medeama SC":{t:"c",c:"Ghana",p:"GPL",cl:"moyen",s:64,a:64,d:62,h:0.24},
+"Samartex":{t:"c",c:"Ghana",p:"GPL",cl:"moyen",s:62,a:62,d:60,h:0.22},
+"Dreams FC":{t:"c",c:"Ghana",p:"GPL",cl:"moyen",s:62,a:62,d:60,h:0.22},
+"ASEC Mimosas":{t:"c",c:"Côte d'Ivoire",p:"Ligue 1 CI",cl:"moyen",s:68,a:68,d:66,h:0.30},
+"Africa Sports":{t:"c",c:"Côte d'Ivoire",p:"Ligue 1 CI",cl:"moyen",s:64,a:64,d:62,h:0.24},
+"Stade d'Abidjan":{t:"c",c:"Côte d'Ivoire",p:"Ligue 1 CI",cl:"moyen",s:62,a:62,d:60,h:0.22},
+"SOL FC":{t:"c",c:"Côte d'Ivoire",p:"Ligue 1 CI",cl:"moyen",s:62,a:62,d:60,h:0.22},
+"Coton Sport":{t:"c",c:"Cameroun",p:"Elite One",cl:"moyen",s:66,a:66,d:64,h:0.28},
+"Canon Yaoundé":{t:"c",c:"Cameroun",p:"Elite One",cl:"moyen",s:62,a:62,d:60,h:0.24},
+"Union Douala":{t:"c",c:"Cameroun",p:"Elite One",cl:"moyen",s:60,a:60,d:58,h:0.22},
+"Colombe":{t:"c",c:"Cameroun",p:"Elite One",cl:"moyen",s:60,a:60,d:58,h:0.22},
+"Horoya AC":{t:"c",c:"Guinée",p:"Ligue 1 Guinée",cl:"moyen",s:66,a:66,d:64,h:0.28},
+"Hafia FC":{t:"c",c:"Guinée",p:"Ligue 1 Guinée",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Stade Malien":{t:"c",c:"Mali",p:"Première Division",cl:"moyen",s:64,a:64,d:62,h:0.26},
+"Djoliba AC":{t:"c",c:"Mali",p:"Première Division",cl:"moyen",s:62,a:62,d:60,h:0.24},
+"Real Bamako":{t:"c",c:"Mali",p:"Première Division",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Teungueth FC":{t:"c",c:"Sénégal",p:"Ligue 1 Sénégal",cl:"moyen",s:64,a:64,d:62,h:0.26},
+"ASC Jaraaf":{t:"c",c:"Sénégal",p:"Ligue 1 Sénégal",cl:"moyen",s:64,a:64,d:62,h:0.26},
+"Génération Foot":{t:"c",c:"Sénégal",p:"Ligue 1 Sénégal",cl:"moyen",s:64,a:64,d:62,h:0.24},
+"Casa Sports":{t:"c",c:"Sénégal",p:"Ligue 1 Sénégal",cl:"moyen",s:62,a:62,d:60,h:0.22},
+"Diambars FC":{t:"c",c:"Sénégal",p:"Ligue 1 Sénégal",cl:"moyen",s:62,a:62,d:60,h:0.22},
+"US Gorée":{t:"c",c:"Sénégal",p:"Ligue 1 Sénégal",cl:"moyen",s:60,a:60,d:58,h:0.22},
+"Young Africans":{t:"c",c:"Tanzanie",p:"PL Tanzanie",cl:"moyen",s:68,a:68,d:66,h:0.30},
+"Simba SC":{t:"c",c:"Tanzanie",p:"PL Tanzanie",cl:"moyen",s:68,a:68,d:66,h:0.30},
+"Azam FC":{t:"c",c:"Tanzanie",p:"PL Tanzanie",cl:"moyen",s:62,a:62,d:60,h:0.24},
+"AS FAR":{t:"c",c:"Maroc",p:"Botola Pro",cl:"moyen",s:70,a:70,d:68,h:0.30},
+"Petro de Luanda":{t:"c",c:"Angola",p:"Girabola",cl:"moyen",s:66,a:66,d:64,h:0.28},
+"Sagrada Esperança":{t:"c",c:"Angola",p:"Girabola",cl:"moyen",s:62,a:62,d:60,h:0.24},
+"1° de Agosto":{t:"c",c:"Angola",p:"Girabola",cl:"moyen",s:64,a:64,d:62,h:0.26},
+"ZESCO United":{t:"c",c:"Zambie",p:"Super League",cl:"moyen",s:64,a:64,d:62,h:0.26},
+"Nkana FC":{t:"c",c:"Zambie",p:"Super League",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Power Dynamos":{t:"c",c:"Zambie",p:"Super League",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Red Arrows":{t:"c",c:"Zambie",p:"Super League",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Zamalek SC":{t:"c",c:"Égypte",p:"Premier League Égypte",cl:"fort",s:76,a:76,d:74,h:0.36},
+"Al Ain":{t:"c",c:"Émirats Arabes Unis",p:"UAE Pro League",cl:"moyen",s:72,a:72,d:70,h:0.30},
+"Al Wasl":{t:"c",c:"Émirats Arabes Unis",p:"UAE Pro League",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Shabab Al Ahli":{t:"c",c:"Émirats Arabes Unis",p:"UAE Pro League",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Al Sadd":{t:"c",c:"Qatar",p:"Qatar Stars League",cl:"moyen",s:72,a:74,d:68,h:0.30},
+"Al Duhail":{t:"c",c:"Qatar",p:"Qatar Stars League",cl:"moyen",s:72,a:72,d:70,h:0.30},
+"Al Rayyan":{t:"c",c:"Qatar",p:"Qatar Stars League",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Al Gharafa":{t:"c",c:"Qatar",p:"Qatar Stars League",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Al Wahda":{t:"c",c:"Arabie Saoudite",p:"Saudi Pro League",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Urawa Red Diamonds":{t:"c",c:"Japon",p:"J1 League",cl:"moyen",s:72,a:72,d:70,h:0.28},
+"Al Shorta":{t:"c",c:"Irak",p:"Iraqi League",cl:"faible",s:60,a:60,d:58,h:0.24},
+"Al Quwa Al Jawiya":{t:"c",c:"Irak",p:"Iraqi League",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Pakhtakor":{t:"c",c:"Ouzbékistan",p:"Super League",cl:"moyen",s:66,a:66,d:64,h:0.28},
+"Bunyodkor":{t:"c",c:"Ouzbékistan",p:"Super League",cl:"moyen",s:64,a:64,d:62,h:0.24},
+"Al Faisaly":{t:"c",c:"Jordanie",p:"Jordan Pro League",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Al Wehdat":{t:"c",c:"Jordanie",p:"Jordan Pro League",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Guangzhou FC":{t:"c",c:"Chine",p:"Chinese Super League",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Shanghai Port":{t:"c",c:"Chine",p:"Chinese Super League",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Beijing Guoan":{t:"c",c:"Chine",p:"Chinese Super League",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Shandong Taishan":{t:"c",c:"Chine",p:"Chinese Super League",cl:"moyen",s:68,a:68,d:66,h:0.26},
+"Wuhan Three Towns":{t:"c",c:"Chine",p:"Chinese Super League",cl:"moyen",s:64,a:64,d:62,h:0.22},
+"Chengdu Rongcheng":{t:"c",c:"Chine",p:"Chinese Super League",cl:"moyen",s:66,a:66,d:64,h:0.24},
+"Mumbai City":{t:"c",c:"Inde",p:"Indian Super League",cl:"faible",s:58,a:58,d:56,h:0.22},
+"ATK Mohun Bagan":{t:"c",c:"Inde",p:"Indian Super League",cl:"faible",s:58,a:58,d:56,h:0.22},
+"East Bengal":{t:"c",c:"Inde",p:"Indian Super League",cl:"faible",s:56,a:56,d:54,h:0.20},
+"Bengaluru FC":{t:"c",c:"Inde",p:"Indian Super League",cl:"faible",s:56,a:56,d:54,h:0.20},
+"Muangthong United":{t:"c",c:"Thaïlande",p:"Thai League 1",cl:"faible",s:58,a:58,d:56,h:0.22},
+"Buriram United":{t:"c",c:"Thaïlande",p:"Thai League 1",cl:"faible",s:60,a:60,d:58,h:0.24},
+"BG Pathum United":{t:"c",c:"Thaïlande",p:"Thai League 1",cl:"faible",s:58,a:58,d:56,h:0.22},
+};
+
+const ALL_TEAM_NAMES=Object.keys(T).sort((a,b)=>a.localeCompare(b));
+
+// ====================================================================
+// VALIDATION INCOMPATIBILITÉ
+// ====================================================================
+function validateMatch(h,a){
+    const hi=T[h],ai=T[a];
+    if(!hi)return{ok:false,msg:`"${h}" non reconnu.`};
+    if(!ai)return{ok:false,msg:`"${a}" non reconnu.`};
+    if(h===a)return{ok:false,msg:"Même équipe !"};
+    if(hi.t!==ai.t){
+        const ht=hi.t==='c'?'club':'sélection nationale';
+        const at=ai.t==='c'?'club':'sélection nationale';
+        return{ok:false,msg:`❌ ${h} (${ht}) vs ${a} (${at}) — impossible !`,
+            sug:[`Essayez ${h} vs un(e) autre ${ht}`,`Essayez ${a} vs un(e) autre ${at}`]};
+    }
+    return{ok:true,hi,ai};
+}
+
+// ====================================================================
+// 23 MARCHÉS
+// ====================================================================
+function calcM(hg1,ag1,hg2,ag2){
+    const hf=hg1+hg2,af=ag1+ag2,t1=hg1+ag1,t2=hg2+ag2,tf=hf+af;
+    const r1=hg1>ag1?"1":hg1<ag1?"2":"X";
+    const r2=hg2>ag2?"1":hg2<ag2?"2":"X";
+    const rf=hf>af?"1":hf<af?"2":"X";
+    return{
+        "1":rf==="1","2":rf==="2","X":rf==="X",
+        "1MT_O1.5":t1>=2,"1MT_O2":t1>=3,"1MT_U2":t1<=1,"1MT_U1.5":t1<=1,
+        "1MT_dom":hg1>ag1,"1MT_ext":ag1>hg1,"1MT_nul":hg1===ag1,
+        "plus_1MT":t1>t2,"plus_2MT":t2>t1,
+        "2MT_dom":hg2>ag2,"2MT_ext":ag2>hg2,
+        "meme_res":r1===r2,
+        "O1.5":tf>=2,"O2":tf>=3,"O2.5":tf>=3,"O3":tf>=4,"U2":tf<=1,
+        "BTTS_oui":hf>=1&&af>=1,"BTTS_non":hf===0||af===0,
+        "O2.5b":tf>=3,
+        _:{hf,af,hg1,ag1,hg2,ag2,t1,t2,tf,r1,r2,rf}
+    };
+}
+function fmtM(m){
+    const L=[{k:"1",l:"1 (Dom)"},{k:"2",l:"2 (Ext)"},{k:"X",l:"X (Nul)"},
+        {k:"1MT_O1.5",l:"1MT O1.5"},{k:"1MT_O2",l:"1MT O2"},{k:"1MT_U2",l:"1MT U2"},{k:"1MT_U1.5",l:"1MT U1.5"},
+        {k:"1MT_dom",l:"1MT Dom"},{k:"1MT_ext",l:"1MT Ext"},{k:"1MT_nul",l:"1MT Nul"},
+        {k:"plus_1MT",l:"+ buts 1MT"},{k:"plus_2MT",l:"+ buts 2MT"},
+        {k:"2MT_dom",l:"2MT Dom"},{k:"2MT_ext",l:"2MT Ext"},{k:"meme_res",l:"Même rés."},
+        {k:"O1.5",l:"O1.5"},{k:"O2",l:"O2"},{k:"O2.5",l:"O2.5"},{k:"O3",l:"O3"},{k:"U2",l:"U2"},
+        {k:"BTTS_oui",l:"BTTS Oui"},{k:"BTTS_non",l:"BTTS Non"},{k:"O2.5b",l:"O2.5bis"}
+    ];
+    return L.map(x=>({l:x.l,v:m[x.k]?"✅":"❌",y:m[x.k]}));
+}
+
+// ====================================================================
+// PRÉDICTION
+// ====================================================================
+let predC={};
+function poisson(l){let L=Math.exp(-l),k=0,p=1;do{k++;p*=Math.random();}while(p>L);return k-1;}
+function genScore(hi,ai){
+    const aH=(hi.a/100)*(1-ai.d/200)*1.8+hi.h;
+    const aA=(ai.a/100)*(1-hi.d/200)*1.5;
+    const r=.38+Math.random()*.1;
+    return{hg1:Math.min(poisson(Math.max(.1,aH*r)),4),ag1:Math.min(poisson(Math.max(.1,aA*r)),4),
+           hg2:Math.min(poisson(Math.max(.1,aH*(1-r))),5),ag2:Math.min(poisson(Math.max(.1,aA*(1-r))),5)};
+}
+function genPred(h,a){
+    const ck=`${h}|${a}`;
+    if(predC[ck])return JSON.parse(JSON.stringify(predC[ck]));
+    const hi=T[h],ai=T[a];
+    const{hg1,ag1,hg2,ag2}=genScore(hi,ai);
+    const m=calcM(hg1,ag1,hg2,ag2);
+    const tl={elite:"⭐ ÉLITE",fort:"💪 FORT",moyen:"📊 MOYEN",faible:"⚠️ FAIBLE"};
+    const r={score:`${m._.hf}-${m._.af}`,ht:`${hg1}-${ag1}`,s2mt:`${hg2}-${ag2}`,
+        result:m._.rf,market:m._.rf==="1"?`${h} gagne`:m._.rf==="2"?`${a} gagne`:"Match Nul",
+        nivH:tl[hi.cl]||"STANDARD",nivA:tl[ai.cl]||"STANDARD",markets:m,marketsFmt:fmtM(m)};
+    predC[ck]=JSON.parse(JSON.stringify(r));
+    return r;
+}
+
+// ====================================================================
+// CONSTANTES & VARIABLES
+// ====================================================================
+const MAX_TK_DAY=4,MAX_MATCH_TK=20;
+function todayKey(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function todayCount(){if(!currentUser||!currentUser.tickets)return 0;const tk=todayKey();return currentUser.tickets.filter(t=>t.dk===tk).length;}
+
+// ====================================================================
+// 🔑 ACTIVATION CODE — 20 CHIFFRES (sans guide)
+// ====================================================================
+function validateActivationCode(){
+    const code=document.getElementById('activation-code-input').value.trim();
+    if(!/^\d{20}$/.test(code)){showCodeStatus("❌ Code invalide : 20 chiffres requis",false);return;}
+    if(usedCodes.includes(code)){showCodeStatus("❌ Ce code a déjà été utilisé.",false);showToast("Code déjà utilisé",true);return;}
     
-    <!-- MODAL TICKETS ADMIN -->
-    <div id="modal-tickets" class="modal">
-        <div class="modal-content">
-            <h4>📋 Tickets de l'utilisateur</h4>
-            <div id="admin-tickets-list"></div>
-            <button class="btn btn-ghost btn-full" onclick="closeModal()">FERMER</button>
+    // Si déjà vérifié mais veut passer en premium
+    if(currentUser.accountType==='verified' && !currentUser.premiumExpiry){
+        const has3=code.includes('3'),has0=code.includes('0'),has5=code.includes('5'),has4=code.includes('4');
+        const has7=code.includes('7'),has2=code.includes('2'),has8=code.includes('8');
+        
+        if(has3&&has0&&has5&&has4){
+            const exp=new Date();exp.setDate(exp.getDate()+15);
+            currentUser.isPremium=true;
+            currentUser.accountType='sub15';
+            currentUser.premiumExpiry=exp.toISOString();
+            currentUser.subscriptionType='👑 Abonnement 15 jours';
+            currentUser.activationDate=new Date().toISOString();
+            usedCodes.push(code);saveCodes();updUser();
+            showCodeStatus("👑 Abonnement 15 jours activé ! Analyses illimitées.",true);
+            showToast("🎉 Abonnement 15 jours ! Analyses illimitées.");
+            startCountdown();
+            renderProfile();
+            return;
+        }
+        else if(!has7&&!has2&&!has8){
+            const exp=new Date();exp.setDate(exp.getDate()+6);
+            currentUser.isPremium=true;
+            currentUser.accountType='sub6';
+            currentUser.premiumExpiry=exp.toISOString();
+            currentUser.subscriptionType='💎 Abonnement 6 jours';
+            currentUser.activationDate=new Date().toISOString();
+            usedCodes.push(code);saveCodes();updUser();
+            showCodeStatus("💎 Abonnement 6 jours activé ! Analyses illimitées.",true);
+            showToast("🎉 Abonnement 6 jours ! Analyses illimitées.");
+            startCountdown();
+            renderProfile();
+            return;
+        }
+        else{
+            showCodeStatus("❌ Ce code n'est pas un code d'abonnement premium valide.",false);
+            showToast("Code premium invalide",true);
+            return;
+        }
+    }
+    
+    // Cas normal : première activation
+    const has1=code.includes('1'),has6=code.includes('6'),has9=code.includes('9');
+    const has7=code.includes('7'),has2=code.includes('2'),has8=code.includes('8');
+    const has3=code.includes('3'),has0=code.includes('0'),has5=code.includes('5'),has4=code.includes('4');
+
+    if(!has1&&!has6&&!has9){
+        currentUser.isVerified=true;currentUser.isPremium=false;
+        currentUser.accountType='verified';currentUser.premiumExpiry=null;
+        currentUser.subscriptionType='✅ Vérifié';currentUser.activationDate=new Date().toISOString();
+        currentUser.activationCodeUsed=true;
+        currentUser.analyseDaily = {date: todayKey(), count: 0};
+        usedCodes.push(code);saveCodes();updUser();
+        showCodeStatus("✅ Compte vérifié avec succès ! Accès permanent (2 analyses/jour gratuites).",true);
+        showToast("✅ Compte vérifié ! 2 analyses gratuites par jour.");
+    }
+    else if(has3&&has0&&has5&&has4){
+        const exp=new Date();exp.setDate(exp.getDate()+15);
+        currentUser.isVerified=true;currentUser.isPremium=true;
+        currentUser.accountType='sub15';currentUser.premiumExpiry=exp.toISOString();
+        currentUser.subscriptionType='👑 Abonnement 15 jours';currentUser.activationDate=new Date().toISOString();
+        currentUser.activationCodeUsed=true;
+        usedCodes.push(code);saveCodes();updUser();
+        showCodeStatus("👑 Abonnement 15 jours activé ! Analyses illimitées.",true);
+        showToast("🎉 Abonnement 15 jours ! Analyses illimitées.");
+    }
+    else if(!has7&&!has2&&!has8){
+        const exp=new Date();exp.setDate(exp.getDate()+6);
+        currentUser.isVerified=true;currentUser.isPremium=true;
+        currentUser.accountType='sub6';currentUser.premiumExpiry=exp.toISOString();
+        currentUser.subscriptionType='💎 Abonnement 6 jours';currentUser.activationDate=new Date().toISOString();
+        currentUser.activationCodeUsed=true;
+        usedCodes.push(code);saveCodes();updUser();
+        showCodeStatus("💎 Abonnement 6 jours activé ! Analyses illimitées.",true);
+        showToast("🎉 Abonnement 6 jours ! Analyses illimitées.");
+    }
+    else{
+        showCodeStatus("❌ Code invalide. Contactez l'admin WhatsApp.",false);
+        showToast("Code invalide",true);return;
+    }
+    checkVerificationStatus();renderProfile();
+    if(currentUser.premiumExpiry)startCountdown();else updCountdown();
+}
+
+function showCodeStatus(m,ok){const d=document.getElementById('code-status');d.innerHTML=`<div style="color:${ok?'#22c55e':'#ef4444'};font-size:13px;margin-top:8px">${m}</div>`;setTimeout(()=>d.innerHTML='',6000);}
+
+// ====================================================================
+// COMPTE À REBOURS
+// ====================================================================
+function startCountdown(){stopCountdown();updCountdown();cdInterval=setInterval(()=>{updCountdown();checkExpiry();},1000);}
+function stopCountdown(){if(cdInterval){clearInterval(cdInterval);cdInterval=null;}}
+function checkExpiry(){
+    if(!currentUser||!currentUser.premiumExpiry)return;
+    if(currentUser.accountType==='verified')return;
+    if(new Date()>=new Date(currentUser.premiumExpiry)){
+        currentUser.isVerified=false;currentUser.isPremium=false;
+        currentUser.premiumExpiry=null;currentUser.subscriptionType=null;currentUser.accountType=null;
+        updUser();showToast("⚠️ Abonnement expiré !",true);
+        checkVerificationStatus();renderProfile();stopCountdown();
+    }
+}
+function updCountdown(){
+    const c=document.getElementById('countdown-display');
+    if(!c||!currentUser){if(c)c.innerHTML='';return;}
+    if(currentUser.accountType==='verified'&&!currentUser.premiumExpiry){
+        c.innerHTML=`<div class="countdown-timer"><div class="countdown-value" style="color:#22c55e">✅ VÉRIFIÉ</div><div class="countdown-label">Accès permanent — 2 analyses gratuites/jour</div></div>`;return;
+    }
+    if(!currentUser.premiumExpiry){c.innerHTML='';return;}
+    const diff=new Date(currentUser.premiumExpiry)-new Date();
+    if(diff<=0){c.innerHTML=`<div class="countdown-timer expired"><div class="countdown-value" style="color:#ef4444">EXPIRÉ</div><div class="countdown-label">Abonnement terminé</div></div>`;return;}
+    const d=Math.floor(diff/864e5),h=Math.floor(diff%864e5/36e5),m=Math.floor(diff%36e5/6e4),s=Math.floor(diff%6e4/1e3);
+    const pad=n=>String(n).padStart(2,'0');
+    c.innerHTML=`<div class="countdown-timer"><div style="font-size:12px;color:var(--gold);font-weight:700">⏱️ TEMPS RESTANT</div><div class="countdown-value" style="color:#22c55e">${d>0?d+'j ':''}${pad(h)}:${pad(m)}:${pad(s)}</div><div class="countdown-label">${currentUser.subscriptionType}<br>Expire le ${new Date(currentUser.premiumExpiry).toLocaleDateString('fr-FR')}<br>✨ Analyses illimitées</div></div>`;
+}
+
+// ====================================================================
+// ANALYSE GRATUITE LIMITÉE (2/jour pour compte vérifié)
+// ====================================================================
+function canAnalyze(h,a){
+    if(!currentUser)return false;
+    const k=`${h.toLowerCase()}|${a.toLowerCase()}`;
+    const now=Date.now();
+    
+    if(!currentUser.analyseDaily) currentUser.analyseDaily = {date: todayKey(), count: 0};
+    
+    if(currentUser.analyseDaily.date !== todayKey()){
+        currentUser.analyseDaily = {date: todayKey(), count: 0};
+        updUser();
+    }
+    
+    if(!currentUser.matchHistory) currentUser.matchHistory = [];
+    currentUser.matchHistory = currentUser.matchHistory.filter(e=>(now-e.timestamp)<48*36e5);
+    
+    if(currentUser.matchHistory.some(e=>e.key===k)) return false;
+    
+    if(currentUser.accountType === 'verified' && !currentUser.premiumExpiry){
+        const maxFree = 2;
+        if(currentUser.analyseDaily.count >= maxFree){
+            showToast(`⚠️ Limite gratuite atteinte (${maxFree}/jour). Activez un abonnement premium pour analyses illimitées.`, true);
+            return false;
+        }
+        currentUser.analyseDaily.count++;
+        updUser();
+        currentUser.matchHistory.push({key:k,timestamp:now});
+        updUser();
+        return true;
+    }
+    
+    if(currentUser.premiumExpiry && new Date(currentUser.premiumExpiry) > new Date()){
+        currentUser.matchHistory.push({key:k,timestamp:now});
+        updUser();
+        return true;
+    }
+    
+    showToast("⚠️ Compte non activé ou abonnement expiré", true);
+    return false;
+}
+
+// ====================================================================
+// AUTH
+// ====================================================================
+function loginUser(){
+    const email=document.getElementById('login-email').value.trim();
+    const pass=document.getElementById('login-pass').value;
+    const user=db.find(u=>u.email===email&&u.pass===pass);
+    if(!user){document.getElementById('login-error').innerText="Email ou mot de passe incorrect";return;}
+    if(user.isBlocked){document.getElementById('login-error').innerText="⛔ Compte bloqué";return;}
+    currentUser=JSON.parse(JSON.stringify(user));
+    if(!currentUser.analyseDaily) currentUser.analyseDaily = {date: todayKey(), count: 0};
+    if(currentUser.premiumExpiry&&currentUser.accountType!=='verified'&&new Date(currentUser.premiumExpiry)<new Date()){
+        currentUser.isVerified=false;currentUser.isPremium=false;
+        currentUser.premiumExpiry=null;currentUser.subscriptionType=null;currentUser.accountType=null;updUser();
+    }
+    showDashboard();showToast(`👋 Bienvenue ${currentUser.name}`);
+}
+function registerUser(){
+    const name=document.getElementById('reg-name').value.trim();
+    const email=document.getElementById('reg-email').value.trim();
+    const wa=document.getElementById('reg-whatsapp').value.trim();
+    const pass=document.getElementById('reg-pass').value;
+    if(!name||!email||!wa||!pass){document.getElementById('email-error').innerText="Tous les champs requis";return;}
+    if(pass.length<4){document.getElementById('email-error').innerText="Min 4 caractères";return;}
+    if(db.find(u=>u.email===email)){document.getElementById('email-error').innerText="Email déjà utilisé";return;}
+    db.push({name,email,whatsapp:wa,pass,isVerified:false,isPremium:false,isBlocked:false,
+        profileImage:null,tickets:[],matchHistory:[],activationCodeUsed:false,
+        premiumExpiry:null,subscriptionType:null,accountType:null,activationDate:null,
+        analyseDaily:{date:todayKey(),count:0},createdAt:new Date().toLocaleString()});
+    saveDB();showToast("✅ Inscription réussie !");toggleAuth(false);document.getElementById('login-email').value=email;
+}
+
+// ====================================================================
+// DASHBOARD
+// ====================================================================
+function showDashboard(){
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    const dl=document.getElementById('teams-list');dl.innerHTML='';
+    ALL_TEAM_NAMES.forEach(t=>{const o=document.createElement('option');o.value=t;dl.appendChild(o);});
+    checkVerificationStatus();switchView('predict');
+    if(currentUser.premiumExpiry&&new Date(currentUser.premiumExpiry)>new Date())startCountdown();
+    if(currentUser.accountType==='verified')updCountdown();
+}
+function checkVerificationStatus(){
+    document.getElementById('verify-alert').style.display=currentUser.isVerified?'none':'block';
+    document.getElementById('predict-main').style.display=currentUser.isVerified?'block':'none';
+    const h=document.getElementById('activation-hint-profile');
+    if(h) h.style.display='block';
+    
+    if(currentUser.isVerified && !currentUser.analyseDaily){
+        currentUser.analyseDaily = {date: todayKey(), count: 0};
+        updUser();
+    }
+}
+
+function renderRemainingAnalyses(){
+    if(!currentUser) return '';
+    if(currentUser.accountType === 'verified' && !currentUser.premiumExpiry){
+        if(!currentUser.analyseDaily) currentUser.analyseDaily = {date: todayKey(), count: 0};
+        const remaining = 2 - currentUser.analyseDaily.count;
+        const maxFree = 2;
+        return `<div style="background:${remaining>0?'#065f46':'#7f1d1d'};border-radius:12px;padding:10px;margin-top:10px;text-align:center">
+            <div style="font-size:11px;color:var(--muted)">📊 Analyses gratuites restantes</div>
+            <div style="font-size:28px;font-weight:900;color:${remaining>0?'#22c55e':'#ef4444'}">${remaining>0?remaining:0}</div>
+            <div style="font-size:9px;color:var(--muted)">sur ${maxFree} aujourd'hui</div>
+            ${remaining===0?'<div style="font-size:10px;color:var(--warning);margin-top:4px">⭐ Activez un abonnement premium pour plus d\'analyses</div>':''}
+        </div>`;
+    }
+    if(currentUser.premiumExpiry && new Date(currentUser.premiumExpiry) > new Date()){
+        return `<div style="background:#065f46;border-radius:12px;padding:10px;margin-top:10px;text-align:center">
+            <div style="font-size:11px;color:var(--green);">✨ Abonnement actif</div>
+            <div style="font-size:12px;color:var(--muted)">Analyses illimitées</div>
+        </div>`;
+    }
+    return '';
+}
+
+function renderProfile(){
+    document.getElementById('prof-name').innerText=currentUser.name;
+    document.getElementById('prof-email').innerText=currentUser.email;
+    document.getElementById('prof-whatsapp').innerHTML=`📱 ${currentUser.whatsapp}`;
+    document.getElementById('profile-pic-container').innerHTML=currentUser.profileImage?
+        `<img src="${currentUser.profileImage}" class="profile-pic">`:
+        `<div class="profile-pic" style="background:var(--border);display:flex;align-items:center;justify-content:center;font-size:32px">📷</div>`;
+    let badge='';
+    if(currentUser.isPremium)badge='<span class="status-badge" style="background:var(--pink)">💎 PREMIUM</span>';
+    else if(currentUser.isVerified)badge='<span class="status-badge" style="background:var(--green)">✅ VÉRIFIÉ</span>';
+    else badge='<span class="status-badge" style="background:var(--muted)">⏳ NON ACTIVÉ</span>';
+    const totalTk=currentUser.tickets?currentUser.tickets.length:0;
+    const todayTk=todayCount();
+    badge+=`<div style="display:flex;gap:10px;margin-top:10px"><div style="flex:1;background:var(--border);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:900;color:var(--cyan)">${totalTk}</div><div style="font-size:10px;color:var(--muted)">Total</div></div><div style="flex:1;background:var(--border);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:900;color:var(--gold)">${todayTk}/${MAX_TK_DAY}</div><div style="font-size:10px;color:var(--muted)">Aujourd'hui</div></div></div>`;
+    badge += renderRemainingAnalyses();
+    document.getElementById('prof-badge').innerHTML=badge;
+    let expInfo='';
+    if(currentUser.accountType==='verified'&&!currentUser.premiumExpiry)
+        expInfo=`<div class="expiry-card"><div style="color:var(--green)">✅ Compte vérifié</div><div style="font-size:11px;color:var(--muted);margin-top:4px">2 analyses/jour gratuites</div></div>`;
+    else if(currentUser.premiumExpiry){
+        const days=Math.ceil((new Date(currentUser.premiumExpiry)-new Date())/864e5);
+        if(days>0)expInfo=`<div class="expiry-card"><div style="color:var(--muted)">${currentUser.subscriptionType}</div><div class="expiry-days">${days}</div><div style="font-size:11px;color:var(--muted)">jour(s) restants</div><div style="font-size:10px;color:var(--green);margin-top:4px">✨ Analyses illimitées</div></div>`;
+        else expInfo=`<div class="expiry-card" style="background:#7f1a1a"><div>⚠️ Expiré</div></div>`;
+    }
+    document.getElementById('premium-expiry-info').innerHTML=expInfo;
+}
+function handleProfileUpload(i){if(i.files[0]){const fr=new FileReader();fr.onload=e=>{currentUser.profileImage=e.target.result;updUser();renderProfile();showToast("📸 Photo mise à jour");};fr.readAsDataURL(i.files[0]);}}
+
+// ====================================================================
+// ENTITÉ INFO
+// ====================================================================
+['team-h','team-a'].forEach(id=>{document.getElementById(id).addEventListener('input',function(){
+    const info=T[this.value.trim()];const div=document.getElementById(id==='team-h'?'entity-info-h':'entity-info-a');
+    if(info)div.innerHTML=`<span class="entity-badge ${info.t==='c'?'entity-club':'entity-national'}">${info.t==='c'?'⚽ Club':'🏳️ Nat.'}</span> ${info.p} | ${info.cl.toUpperCase()}`;
+    else div.innerHTML='';
+});});
+
+// ====================================================================
+// ANALYSE
+// ====================================================================
+function runAnalysis(){
+    const h=document.getElementById('team-h').value.trim(),a=document.getElementById('team-a').value.trim();
+    const err=document.getElementById('ana-error'),incomp=document.getElementById('incompatibility-alert');
+    err.innerHTML='';incomp.style.display='none';
+    if(!h||!a){err.innerHTML="❌ Remplissez les deux équipes.";return;}
+    const v=validateMatch(h,a);
+    if(!v.ok){incomp.innerHTML=`<div class="incompatibility-alert"><div style="font-size:14px;font-weight:700">🚫 Match Impossible</div><div style="font-size:12px;margin-top:8px">${v.msg}</div>${v.sug?`<div style="font-size:11px;margin-top:8px;color:var(--muted)">Suggestions:<br>${v.sug.map(s=>'• '+s).join('<br>')}</div>`:''}</div>`;incomp.style.display='block';showToast("Incompatible",true);return;}
+    if(!currentUser.isVerified){err.innerHTML="⚠️ Compte non activé.";return;}
+    if(currentUser.premiumExpiry&&currentUser.accountType!=='verified'&&new Date(currentUser.premiumExpiry)<new Date()){err.innerHTML="⚠️ Abonnement expiré.";return;}
+    if(!canAnalyze(h,a)){err.innerHTML="⏱️ Déjà analysé ou limite gratuite atteinte.";return;}
+    document.getElementById('ana-loader').style.display='inline-block';document.getElementById('btn-ana').disabled=true;
+    setTimeout(()=>{
+        const p=genPred(h,a);
+        tempMatch={h,a,market:p.market,score:p.score,ht:p.ht,s2mt:p.s2mt,nivH:p.nivH,nivA:p.nivA,markets:p.markets,marketsFmt:p.marketsFmt};
+        document.getElementById('res-h').innerHTML=`${h}<div class="team-strength">${p.nivH}</div>`;
+        document.getElementById('res-a').innerHTML=`${a}<div class="team-strength">${p.nivA}</div>`;
+        document.getElementById('res-market').innerText=p.market;
+        document.getElementById('res-ht').innerHTML=`1MT: <b>${p.ht}</b> | 2MT: <b>${p.s2mt}</b>`;
+        document.getElementById('res-score').innerText=p.score;
+        document.getElementById('res-score-exact').style.display='block';
+        document.getElementById('markets-grid').innerHTML=p.marketsFmt.map(m=>`<div class="market-item"><span>${m.l}</span><span class="${m.y?'market-val-yes':'market-val-no'}">${m.v}</span></div>`).join('');
+        document.getElementById('markets-display').style.display='block';
+        document.getElementById('result-box').style.display='block';
+        document.getElementById('ana-loader').style.display='none';document.getElementById('btn-ana').disabled=false;
+        const remaining = currentUser.analyseDaily ? (2 - currentUser.analyseDaily.count) : 2;
+        showToast(`✅ Analyse effectuée ! ${remaining} analyse(s) gratuite(s) restante(s) aujourd'hui.`);
+    },800);
+}
+
+// ====================================================================
+// COUPON
+// ====================================================================
+function clearCurrentTicket(){if(currentTicket.length&&confirm("Effacer ?")){currentTicket=[];renderCoupon();document.getElementById('result-box').style.display='none';showToast("Vidé");}}
+function addToTicket(){
+    if(!tempMatch)return;
+    if(currentTicket.length>=MAX_MATCH_TK){showToast(`⚠️ Max ${MAX_MATCH_TK} matchs !`,true);return;}
+    currentTicket.push({...tempMatch});renderCoupon();document.getElementById('result-box').style.display='none';showToast("✅ Ajouté");
+}
+function renderCoupon(){
+    const list=document.getElementById('ticket-list'),c=currentTicket.length;
+    document.getElementById('current-ticket').style.display=c?'block':'none';
+    const warn=document.getElementById('match-limit-warning');
+    if(c>=MAX_MATCH_TK){warn.style.display='block';warn.innerHTML=`⚠️ Maximum ${MAX_MATCH_TK} matchs atteint`;}
+    else if(c>=MAX_MATCH_TK-2){warn.style.display='block';warn.innerHTML=`⚠️ Plus que ${MAX_MATCH_TK-c} place(s)`;}
+    else warn.style.display='none';
+    const isG=c>=12;
+    document.getElementById('coupon-title').innerHTML=`${isG?'🍽️ TICKET GOURMAND':'🎫 Coupon'} (${c}/${MAX_MATCH_TK})`;
+    list.innerHTML=currentTicket.map((m,i)=>`<div class="ticket-item"><div style="flex:1;font-size:11px"><b>${m.h}</b> vs <b>${m.a}</b><br>🎯 ${m.market} | 📊 ${m.score}<br>⏱️ 1MT:${m.ht} | 2MT:${m.s2mt}</div><span style="color:var(--danger);cursor:pointer;font-size:16px" onclick="removeFromCoupon(${i})">✖</span></div>`).join('');
+}
+function removeFromCoupon(i){currentTicket.splice(i,1);renderCoupon();}
+function saveTicket(){
+    if(!currentTicket.length)return;
+    if(todayCount()>=MAX_TK_DAY){showToast(`⚠️ Max ${MAX_TK_DAY} tickets/jour !`,true);return;}
+    const isG=currentTicket.length>=12;
+    currentUser.tickets.unshift({date:new Date().toLocaleString(),dk:todayKey(),matches:[...currentTicket],isG,label:isG?'🍽️ Ticket Gourmand':'🎫 Ticket',doubled:false});
+    currentTicket=[];renderCoupon();updUser();
+    showToast(isG?"🍽️ Ticket Gourmand enregistré !":"💾 Ticket enregistré !");switchView('tickets');
+}
+
+// ====================================================================
+// TICKETS VUE
+// ====================================================================
+function renderSavedTickets(){
+    renderDailyCounter();
+    const c=document.getElementById('tickets-list-view');
+    if(!currentUser.tickets.length){c.innerHTML='<p style="text-align:center;color:var(--muted);padding:40px 0">🎫 Aucun ticket.</p>';return;}
+    c.innerHTML=currentUser.tickets.map((t,idx)=>{
+        const isG=t.isG||t.matches.length>=12;
+        return`<div class="card" style="padding:0;overflow:hidden"><div style="background:linear-gradient(135deg,${isG?'#8b5cf6,#6d28d9':'var(--primary),#1d4ed8'});padding:10px 15px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:700;color:#fff">${t.label||'🎫 Ticket'}${t.doubled?'<span style="font-size:9px;background:var(--cyan);color:#000;padding:2px 6px;border-radius:8px;margin-left:6px">🔄 Doublé</span>':''}</div><div style="font-size:10px;color:rgba(255,255,255,.7)">📅 ${t.date}</div></div><button class="delete-ticket-btn" onclick="event.stopPropagation();deleteTicket(${idx})">🗑️</button></div><div onclick="viewTicketDetail(${idx})" style="cursor:pointer;padding:12px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px">📊 <b>${t.matches.length}</b> match(s)</span><span class="ticket-badge-${isG?'gourmand':'normal'}">${isG?'GOURMAND':'NORMAL'}</span></div><div style="font-size:10px;color:var(--muted);margin-top:4px">${t.matches.slice(0,3).map(m=>m.h+' vs '+m.a).join(', ')}${t.matches.length>3?'...':''}</div></div></div>`;
+    }).join('');
+}
+function renderDailyCounter(){
+    const c=document.getElementById('daily-counter-display');if(!c)return;
+    const n=todayCount();let dots='';for(let i=0;i<MAX_TK_DAY;i++)dots+=`<div class="daily-dot ${i<n?'filled':'empty'}"></div>`;
+    c.innerHTML=`<div class="daily-counter"><span>📅 Aujourd'hui : <b>${n}/${MAX_TK_DAY}</b></span><div class="daily-dots">${dots}</div></div>`+
+        (n>=MAX_TK_DAY?'<div style="color:var(--danger);font-size:11px;text-align:center;margin-bottom:10px">⚠️ Limite quotidienne atteinte</div>':'');
+}
+function deleteTicket(i){if(confirm("Supprimer ?")){currentUser.tickets.splice(i,1);updUser();renderSavedTickets();showToast("Supprimé");}}
+
+function viewTicketDetail(idx){
+    selectedTicketIdx=idx;const t=currentUser.tickets[idx];const isG=t.isG||t.matches.length>=12;
+    document.getElementById('ticket-detail-content').innerHTML=`
+        <div style="background:linear-gradient(135deg,${isG?'#8b5cf6,#6d28d9':'var(--primary),#1d4ed8'});padding:15px;border-radius:16px;margin-bottom:15px;text-align:center">
+            <h3>${t.label||'🎫 Ticket'}</h3><div style="font-size:12px;color:rgba(255,255,255,.8)">${t.date}</div>
+            <div style="font-size:14px;font-weight:700;margin-top:4px">${t.matches.length} match(s)</div>
+            ${t.doubled?'<div style="font-size:10px;margin-top:4px;color:rgba(255,255,255,.6)">🔄 Doublé</div>':''}
         </div>
-    </div>
+        <div class="card">${t.matches.map((m,mi)=>`<div class="ticket-item" style="flex-direction:column;align-items:flex-start;padding-bottom:8px;margin-bottom:8px;border-left-color:${m._d?'var(--gold)':'var(--primary)'}">
+            <div style="font-weight:700">${mi+1}. ${m.h} vs ${m.a} ${m._d?'<span style="font-size:8px;color:var(--gold)">🔄</span>':''}</div>
+            <div style="font-size:11px;margin-top:4px">🎯 <b>${m.market}</b><br>📊 <b>${m.score}</b> (1MT:${m.ht} 2MT:${m.s2mt})</div>
+        </div>`).join('')}</div>
+        <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+            <button class="btn btn-double" onclick="doubleTicket()" style="flex:1">🔄 DOUBLER (3-5)</button>
+            <button class="btn btn-gourmand" onclick="gourmandTicket()" style="flex:1">🍽️ GOURMAND</button>
+            <button class="btn btn-danger" onclick="deleteThisTicket()" style="flex:1">🗑️</button>
+        </div>`;
+    document.getElementById('view-tickets').style.display='none';
+    document.getElementById('view-ticket-detail').style.display='block';
+}
 
-    <script>
-        // === TRADUCTIONS ===
-        const translations = {
-            fr: {
-                login_title: "Connexion", register_title: "Inscription", login_btn: "SE CONNECTER",
-                register_btn: "Créer un compte", admin_console: "CONSOLE MUTWE", back_btn: "Retour",
-                nav_analyze: "ANALYSE", nav_tickets: "TICKETS", nav_messages: "MESSAGES", nav_profile: "PROFIL",
-                analyze_btn: "ANALYSER LE MATCH", add_to_ticket: "+ AJOUTER AU COUPON", save_ticket: "ENREGISTRER LE TICKET",
-                premium_lock: "Score Exact Réservé Premium", exact_score_label: "SCORE EXACT PRÉDIT",
-                current_ticket: "Coupon Actuel", verify_alert: "⚠️ Votre compte est en attente de vérification.",
-                profile_pic_label: "Photo de profil :", upload_profile_btn: "📸 CHARGER PHOTO DE PROFIL",
-                id_upload_label: "Vérification d'identité requise :", upload_id_btn: "📷 TÉLÉCHARGER PIÈCE ID",
-                logout_btn: "DÉCONNEXION", admin_title: "🛡️ CONSOLE MUTWE", exit_btn: "QUITTER",
-                stat_total_users: "Total Utilisateurs", stat_new_today: "Nouveaux aujourd'hui", stat_premium: "Premium"
-            },
-            en: {
-                login_title: "Login", register_title: "Sign Up", login_btn: "LOGIN",
-                register_btn: "Create account", admin_console: "MUTWE CONSOLE", back_btn: "Back",
-                nav_analyze: "ANALYZE", nav_tickets: "TICKETS", nav_messages: "MESSAGES", nav_profile: "PROFILE",
-                analyze_btn: "ANALYZE MATCH", add_to_ticket: "+ ADD TO SLIP", save_ticket: "SAVE TICKET",
-                premium_lock: "🔒 Exact Score Reserved for Premium", exact_score_label: "PREDICTED EXACT SCORE",
-                current_ticket: "Current Slip", verify_alert: "⚠️ Your account is pending verification.",
-                profile_pic_label: "Profile picture:", upload_profile_btn: "📸 UPLOAD PROFILE PICTURE",
-                id_upload_label: "Identity verification required:", upload_id_btn: "📷 UPLOAD ID CARD",
-                logout_btn: "LOGOUT", admin_title: "🛡️ MUTWE CONSOLE", exit_btn: "EXIT",
-                stat_total_users: "Total Users", stat_new_today: "New Today", stat_premium: "Premium"
-            }
-        };
-        
-        let currentLang = 'fr';
-        
-        function toggleLanguage() {
-            currentLang = currentLang === 'fr' ? 'en' : 'fr';
-            document.querySelectorAll('[data-key]').forEach(el => {
-                const key = el.getAttribute('data-key');
-                if(translations[currentLang][key]) {
-                    if(el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                        el.placeholder = translations[currentLang][key];
-                    } else {
-                        el.innerText = translations[currentLang][key];
-                    }
-                }
-            });
-        }
+function deleteThisTicket(){if(selectedTicketIdx!==null&&confirm("Supprimer ?")){currentUser.tickets.splice(selectedTicketIdx,1);updUser();backToTicketsList();showToast("Supprimé");}}
 
-        // === BLOCS CONTINENTAUX ===
-        const AFRICA_COUNTRIES = [
-            '🇩🇿 Algérie', '🇦🇴 Angola', '🇧🇯 Bénin', '🇧🇼 Botswana', '🇧🇫 Burkina Faso', '🇧🇮 Burundi',
-            '🇨🇻 Cap-Vert', '🇨🇲 Cameroun', '🇨🇫 République centrafricaine', '🇹🇩 Tchad', '🇰🇲 Comores',
-            '🇨🇬 Congo', '🇨🇩 République démocratique du Congo', '🇩🇯 Djibouti', '🇪🇬 Égypte',
-            '🇬🇶 Guinée équatoriale', '🇪🇷 Érythrée', '🇸🇿 Eswatini', '🇪🇹 Éthiopie', '🇬🇦 Gabon',
-            '🇬🇲 Gambie', '🇬🇭 Ghana', '🇬🇳 Guinée', '🇬🇼 Guinée-Bissau', '🇨🇮 Côte d\'Ivoire',
-            '🇰🇪 Kenya', '🇱🇸 Lesotho', '🇱🇷 Libéria', '🇱🇾 Libye', '🇲🇬 Madagascar', '🇲🇼 Malawi',
-            '🇲🇱 Mali', '🇲🇷 Mauritanie', '🇲🇺 Maurice', '🇲🇦 Maroc', '🇲🇿 Mozambique', '🇳🇦 Namibie',
-            '🇳🇪 Niger', '🇳🇬 Nigéria', '🇷🇼 Rwanda', '🇸🇹 Sao Tomé-et-Principe', '🇸🇳 Sénégal',
-            '🇸🇨 Seychelles', '🇸🇱 Sierra Leone', '🇸🇴 Somalie', '🇿🇦 Afrique du Sud', '🇸🇸 Soudan du Sud',
-            '🇸🇩 Soudan', '🇹🇿 Tanzanie', '🇹🇬 Togo', '🇹🇳 Tunisie', '🇺🇬 Ouganda', '🇿🇲 Zambie', '🇿🇼 Zimbabwe'
-        ];
-        
-        const EUROPE_COUNTRIES = ['🇫🇷 France', '🇩🇪 Allemagne', '🇮🇹 Italie', '🇪🇸 Espagne', '🇬🇧 Royaume-Uni', '🇵🇹 Portugal', '🇳🇱 Pays-Bas', '🇧🇪 Belgique', '🇨🇭 Suisse', '🇸🇪 Suède'];
-        const AMERICA_COUNTRIES = ['🇺🇸 États-Unis', '🇨🇦 Canada', '🇧🇷 Brésil', '🇦🇷 Argentine', '🇲🇽 Mexique'];
-        const ASIA_COUNTRIES = ['🇨🇳 Chine', '🇯🇵 Japon', '🇮🇳 Inde', '🇸🇦 Arabie Saoudite', '🇰🇷 Corée du Sud'];
-        const OCEANIA_COUNTRIES = ['🇦🇺 Australie', '🇳🇿 Nouvelle-Zélande', '🇫🇯 Fidji'];
-        
-        const NATIONAL_TEAMS = [...AFRICA_COUNTRIES, ...EUROPE_COUNTRIES, ...AMERICA_COUNTRIES, ...ASIA_COUNTRIES, ...OCEANIA_COUNTRIES];
-        
-        const EUROPE_CLUBS = [
-            'Real Madrid', 'Manchester City', 'Bayern Munich', 'PSG', 'Liverpool', 'Inter Milan', 'Arsenal', 'Bayer Leverkusen',
-            'FC Barcelona', 'Juventus', 'AC Milan', 'Borussia Dortmund', 'Atletico Madrid', 'Napoli', 'Benfica', 'Porto',
-            'Sporting CP', 'Ajax', 'PSV Eindhoven', 'Feyenoord', 'Galatasaray', 'Fenerbahce', 'Besiktas', 'Olympiakos',
-            'PAOK', 'Celtic', 'Rangers', 'AS Roma', 'Atalanta', 'Lazio', 'Fiorentina', 'Aston Villa', 'West Ham', 'Brighton',
-            'Newcastle', 'Tottenham', 'Chelsea', 'Manchester United', 'Everton', 'Fulham', 'Crystal Palace', 'Brentford',
-            'Wolverhampton', 'Bournemouth', 'Nottingham Forest', 'Burnley', 'Leicester City', 'Southampton', 'AS Monaco',
-            'Lille', 'Nice', 'Lens', 'Lyon', 'Marseille', 'Rennes', 'Stuttgart', 'RB Leipzig', 'Eintracht Frankfurt'
-        ];
+function doubleTicket(){
+    if(selectedTicketIdx===null)return;const t=currentUser.tickets[selectedTicketIdx];
+    const total=t.matches.length;const maxC=Math.min(5,total),minC=Math.min(3,maxC);
+    const num=minC+Math.floor(Math.random()*(maxC-minC+1));
+    const avail=[...Array(total).keys()],indices=[];
+    for(let i=0;i<num&&avail.length;i++){const ri=Math.floor(Math.random()*avail.length);indices.push(avail.splice(ri,1)[0]);}
+    const nm=t.matches.map((m,i)=>{
+        if(indices.includes(i)){const g=genPred(m.h,m.a);return{h:m.h,a:m.a,market:g.market,score:g.score,ht:g.ht,s2mt:g.s2mt,nivH:g.nivH,nivA:g.nivA,markets:g.markets,marketsFmt:g.marketsFmt,_d:true};}
+        return{...m,_d:false};
+    });
+    if(todayCount()>=MAX_TK_DAY){showToast(`⚠️ Max ${MAX_TK_DAY} tickets/jour !`,true);return;}
+    const isG=nm.length>=12;
+    currentUser.tickets.unshift({date:new Date().toLocaleString(),dk:todayKey(),matches:nm,isG,label:(isG?'🍽️ Ticket Gourmand':'🎫 Ticket')+' (Doublé)',doubled:true});
+    updUser();showToast(`🔄 Doublé ! ${num} résultat(s) modifié(s)`);backToTicketsList();
+}
 
-        const AFRICA_CLUBS = [
-            'TP Mazembe', 'Al Ahly', 'Raja Casablanca', 'Mamelodi Sundowns', 'AS Vita Club', 'Wydad AC', 'Zamalek',
-            'Saint Eloi Lupopo', 'Espérance de Tunis', 'CR Belouizdad', 'Orlando Pirates', 'USM Alger', 'Simba SC',
-            'Young Africans', 'Petro Luanda', 'Maniema Union', 'Enyimba', 'ASEC Mimosas', 'Kaizer Chiefs', 'Horoya AC'
-        ];
+function gourmandTicket(){
+    if(selectedTicketIdx===null)return;let all=[];
+    for(const u of db)if(u.email!==currentUser.email)for(const t of u.tickets)for(const m of t.matches)all.push(m);
+    if(!all.length)all=currentUser.tickets[selectedTicketIdx].matches;
+    const maxM=currentUser.isPremium?20:12;
+    const g=all.sort(()=>0.5-Math.random()).slice(0,maxM).map(m=>{const p=genPred(m.h,m.a);return{h:m.h,a:m.a,market:p.market,score:p.score,ht:p.ht,s2mt:p.s2mt,nivH:p.nivH,nivA:p.nivA};});
+    if(todayCount()>=MAX_TK_DAY){showToast(`⚠️ Max ${MAX_TK_DAY} tickets/jour !`,true);return;}
+    currentUser.tickets.unshift({date:new Date().toLocaleString(),dk:todayKey(),matches:g,isG:true,label:'🍽️ Ticket Gourmand',doubled:false});
+    updUser();showToast(`🍽️ Gourmand (${g.length} matchs)`);backToTicketsList();
+}
 
-        const AMERICA_ASIA_CLUBS = [
-            'Flamengo', 'Palmeiras', 'River Plate', 'Boca Juniors', 'Sao Paulo', 'Atletico Mineiro', 'Fluminense',
-            'Inter Miami', 'Club América', 'Tigres UANL', 'Al-Hilal', 'Al-Nassr', 'Al-Ittihad', 'Al-Ahli', 'Monterrey',
-            'Gremio', 'Racing Club', 'Yokohama Marinos', 'Urawa Reds', 'Jeonbuk'
-        ];
-        
-        const ALL_TEAMS = [...NATIONAL_TEAMS, ...EUROPE_CLUBS, ...AFRICA_CLUBS, ...AMERICA_ASIA_CLUBS].sort();
+function backToTicketsList(){document.getElementById('view-ticket-detail').style.display='none';document.getElementById('view-tickets').style.display='block';renderSavedTickets();selectedTicketIdx=null;}
 
-        const MARKETS = [
-            '1', '2', 'X', 'Première mi-temps +1.5 buts', 'Première mi-temps +2 buts',
-            'Première mi-temps -2 buts', 'Première mi-temps -1.5 buts', 'Première mi-temps domicile gagne',
-            'Première mi-temps extérieur gagne', 'Première mi-temps match nul', 'Plus de buts 1ère mi-temps',
-            'Plus de buts 2ème mi-temps', 'Deuxième mi-temps domicile gagne', 'Deuxième mi-temps extérieur gagne',
-            'Tout les deux mi-temps égalité', 'Over 1.5', 'Over 2', 'Over 2.5', 'Over 3', 'Under 2',
-            'All teams win yes', 'All teams win no'
-        ];
-
-        function getIntelligentExactScore(market, teamA, teamB) {
-            const getPower = (team) => {
-                if (EUROPE_CLUBS.slice(0,20).includes(team) || AFRICA_CLUBS.slice(0,20).includes(team) || AMERICA_ASIA_CLUBS.slice(0,20).includes(team)) return 'fort';
-                if (EUROPE_CLUBS.slice(20,40).includes(team) || AFRICA_CLUBS.slice(20,40).includes(team) || AMERICA_ASIA_CLUBS.slice(20,40).includes(team)) return 'moyen';
-                return 'faible';
-            };
-            
-            const powerA = getPower(teamA);
-            const powerB = getPower(teamB);
-            const isFortVsFaible = (powerA === 'fort' && powerB === 'faible') || (powerA === 'faible' && powerB === 'fort');
-            const isFortVsFort = (powerA === 'fort' && powerB === 'fort') || (powerA === 'moyen' && powerB === 'moyen');
-            
-            if (market === '1') {
-                const scores = isFortVsFaible ? ['2-0', '3-0', '4-0', '5-0', '3-1', '4-1'] : 
-                               (isFortVsFort ? ['1-0', '2-0', '2-1', '3-1'] : ['1-0', '2-0', '2-1']);
-                return scores[Math.floor(Math.random() * scores.length)];
-            }
-            if (market === '2') {
-                const scores = isFortVsFaible ? ['0-2', '0-3', '0-4', '0-5', '1-3', '1-4'] : 
-                               (isFortVsFort ? ['0-1', '0-2', '1-2', '1-3'] : ['0-1', '0-2', '1-2']);
-                return scores[Math.floor(Math.random() * scores.length)];
-            }
-            if (market === 'X') return ['0-0', '1-1', '2-2'][Math.floor(Math.random() * 3)];
-            if (market === 'Over 2.5' || market === 'Over 3') return ['2-1', '3-0', '3-1', '2-2', '4-0'][Math.floor(Math.random() * 5)];
-            return ['1-0', '2-1', '1-1'][Math.floor(Math.random() * 3)];
-        }
-
-        function getTeamContinent(team) {
-            if (AFRICA_COUNTRIES.includes(team) || AFRICA_CLUBS.includes(team)) return 'africa';
-            if (EUROPE_COUNTRIES.includes(team) || EUROPE_CLUBS.includes(team)) return 'europe';
-            if (AMERICA_COUNTRIES.includes(team) || AMERICA_ASIA_CLUBS.includes(team)) return 'america_asia';
-            if (ASIA_COUNTRIES.includes(team)) return 'asia';
-            if (OCEANIA_COUNTRIES.includes(team)) return 'oceania';
-            return null;
-        }
-
-        let db = JSON.parse(localStorage.getItem('wise03_db')) || [];
-        let currentUser = null;
-        let currentTicket = [];
-        let tempMatch = null;
-        let adminUserIdx = null;
-
-        function saveDB() { localStorage.setItem('wise03_db', JSON.stringify(db)); updateAdminStats(); }
-
-        function updateAdminStats() {
-            const today = new Date().toDateString();
-            const newToday = db.filter(u => u.createdAt && u.createdAt.includes(today)).length;
-            const premiumCount = db.filter(u => u.isPremium).length;
-            document.getElementById('stat-users') && (document.getElementById('stat-users').innerText = db.length);
-            document.getElementById('stat-new') && (document.getElementById('stat-new').innerText = newToday);
-            document.getElementById('stat-premium') && (document.getElementById('stat-premium').innerText = premiumCount);
-        }
-
-        // --- AUTH ---
-        function loginUser() {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-pass').value;
-            const user = db.find(u => u.email === email && u.pass === pass);
-            if(user) {
-                if(user.isBlocked) return alert("Compte bloqué.");
-                currentUser = user;
-                if(currentUser.premiumExpiry && new Date(currentUser.premiumExpiry) < new Date()) {
-                    currentUser.isPremium = false;
-                    currentUser.premiumExpiry = null;
-                    updateUser();
-                }
-                showDashboard();
-                updateMessageNotification();
-            } else alert("Identifiants incorrects.");
-        }
-
-        function registerUser() {
-            const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
-            const whatsapp = document.getElementById('reg-whatsapp').value;
-            const pass = document.getElementById('reg-pass').value;
-            if(!name || !email || !whatsapp || !pass) return alert("Remplissez tous les champs.");
-            if(db.find(u => u.email === email)) return alert("Email déjà utilisé.");
-            
-            db.push({
-                name, email, whatsapp, pass, 
-                isVerified: false, isPremium: false, isBlocked: false,
-                idSent: false, idImage: null, profileImage: null,
-                messages: [], tickets: [], dailyCount: 0,
-                lastMatchDate: null, createdAt: new Date().toLocaleString(),
-                unreadMessages: 0
-            });
-            saveDB();
-            alert("Compte créé ! Connectez-vous.");
-            toggleAuth(false);
-        }
-
-        function showDashboard() {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            
-            const dl = document.getElementById('teams-list');
-            dl.innerHTML = '';
-            ALL_TEAMS.forEach(t => {
-                const opt = document.createElement('option');
-                opt.value = t;
-                dl.appendChild(opt);
-            });
-            
-            checkVerificationStatus();
-            switchView('predict');
-        }
-
-        function checkVerificationStatus() {
-            const alertBox = document.getElementById('verify-alert');
-            const main = document.getElementById('predict-main');
-            if(currentUser.isVerified) {
-                alertBox.style.display = 'none';
-                main.style.display = 'block';
-            } else {
-                alertBox.style.display = 'block';
-                main.style.display = 'none';
-            }
-        }
-
-        function updateMessageNotification() {
-            const unread = currentUser.unreadMessages || 0;
-            const msgNav = document.getElementById('nav-messages');
-            if(unread > 0) {
-                let badge = msgNav.querySelector('.notification-badge');
-                if(!badge) {
-                    badge = document.createElement('span');
-                    badge.className = 'notification-badge';
-                    msgNav.appendChild(badge);
-                }
-                badge.innerText = unread;
-            } else {
-                const badge = msgNav.querySelector('.notification-badge');
-                if(badge) badge.remove();
-            }
-        }
-
-        // --- ANALYSE ---
-        function runAnalysis() {
-            const h = document.getElementById('team-h').value.trim();
-            const a = document.getElementById('team-a').value.trim();
-            const err = document.getElementById('ana-error');
-
-            if(!ALL_TEAMS.includes(h) || !ALL_TEAMS.includes(a)) {
-                err.innerText = "Sélectionnez des équipes valides.";
-                return;
-            }
-
-            if(h === a) {
-                err.innerText = "Les deux équipes doivent être différentes.";
-                return;
-            }
-
-            const continentH = getTeamContinent(h);
-            const continentA = getTeamContinent(a);
-            
-            if(continentH !== continentA) {
-                err.innerText = "❌ Rencontre impossible : Les deux équipes doivent appartenir au même continent.";
-                return;
-            }
-
-            const today = new Date().toDateString();
-            if(!currentUser.isPremium && currentUser.lastMatchDate === today) {
-                err.innerText = "⚠️ Compte Standard : 1 seul match analysé par jour. Passez Premium pour plus d'analyses.";
-                return;
-            }
-
-            err.innerText = "";
-            document.getElementById('ana-loader').style.display = 'inline-block';
-            document.getElementById('btn-ana').disabled = true;
-
-            setTimeout(() => {
-                const randomMarket = MARKETS[Math.floor(Math.random() * MARKETS.length)];
-                
-                tempMatch = { 
-                    h, a, 
-                    market: randomMarket,
-                    score: currentUser.isPremium ? getIntelligentExactScore(randomMarket, h, a) : null
-                };
-                
-                document.getElementById('res-h').innerText = h;
-                document.getElementById('res-a').innerText = a;
-                document.getElementById('res-market').innerText = tempMatch.market;
-                if(tempMatch.score) document.getElementById('res-score').innerText = tempMatch.score;
-
-                if(currentUser.isPremium) {
-                    document.getElementById('premium-data').style.display = 'block';
-                    document.getElementById('premium-lock').style.display = 'none';
-                } else {
-                    document.getElementById('premium-data').style.display = 'none';
-                    document.getElementById('premium-lock').style.display = 'block';
-                }
-
-                if(!currentUser.isPremium) {
-                    currentUser.lastMatchDate = today;
-                    updateUser();
-                }
-
-                document.getElementById('result-box').style.display = 'block';
-                document.getElementById('ana-loader').style.display = 'none';
-                document.getElementById('btn-ana').disabled = false;
-            }, 1500);
-        }
-
-        function addToTicket() {
-            if(!tempMatch) return;
-            if(!currentUser.isPremium && currentTicket.length >= 1) {
-                alert("⚠️ Compte Standard : 1 seul match par ticket.");
-                return;
-            }
-            if(currentUser.isPremium && currentTicket.length >= 15) {
-                alert("Maximum 15 matchs par ticket.");
-                return;
-            }
-            currentTicket.push({...tempMatch});
-            renderCurrentTicket();
-            document.getElementById('result-box').style.display = 'none';
-            document.getElementById('team-h').value = '';
-            document.getElementById('team-a').value = '';
-        }
-
-        function renderCurrentTicket() {
-            const container = document.getElementById('ticket-list');
-            const count = document.getElementById('ticket-count');
-            document.getElementById('current-ticket').style.display = currentTicket.length > 0 ? 'block' : 'none';
-            count.innerText = currentTicket.length;
-            container.innerHTML = currentTicket.map((m, i) => `
-                <div class="ticket-item" style="font-size:11px; padding:8px 0; border-bottom:1px solid #1e293b; display:flex; justify-content:space-between;">
-                    <span>${m.h} vs ${m.a} - <b>${m.market}</b>${m.score ? ` (${m.score})` : ''}</span>
-                    <span style="color:var(--danger); cursor:pointer;" onclick="removeFromTicket(${i})">✖</span>
-                </div>
-            `).join('');
-        }
-
-        function removeFromTicket(i) {
-            currentTicket.splice(i, 1);
-            renderCurrentTicket();
-        }
-
-        function saveTicket() {
-            if(currentTicket.length === 0) return;
-            const today = new Date().toDateString();
-            const ticketsToday = currentUser.tickets.filter(t => t.date.includes(today)).length;
-            if(!currentUser.isPremium && ticketsToday >= 1) {
-                alert("⚠️ Compte Standard : 1 ticket par jour maximum.");
-                return;
-            }
-            if(currentUser.isPremium && ticketsToday >= 5) {
-                alert("Premium : 5 tickets maximum par jour.");
-                return;
-            }
-            currentUser.tickets.unshift({
-                date: new Date().toLocaleString(),
-                matches: [...currentTicket]
-            });
-            currentTicket = [];
-            renderCurrentTicket();
-            updateUser();
-            alert("Ticket enregistré !");
-            switchView('tickets');
-        }
-
-        // --- NAVIGATION ---
-        function switchView(view) {
-            ['predict', 'tickets', 'messages', 'profile'].forEach(v => {
-                document.getElementById('view-'+v).style.display = v === view ? 'block' : 'none';
-                document.getElementById('nav-'+v).classList.toggle('active', v === view);
-            });
-            if(view === 'tickets') renderSavedTickets();
-            if(view === 'messages') {
-                if(currentUser.unreadMessages > 0) {
-                    currentUser.unreadMessages = 0;
-                    updateUser();
-                    updateMessageNotification();
-                }
-                renderMessages();
-            }
-            if(view === 'profile') renderProfile();
-        }
-
-        function renderSavedTickets() {
-            const container = document.getElementById('saved-tickets-list');
-            if(currentUser.tickets.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color:var(--muted); margin-top:20px;">Aucun ticket.</p>';
-                return;
-            }
-            container.innerHTML = currentUser.tickets.map(t => `
-                <div class="card" style="font-size:11px;">
-                    <div style="color:var(--primary); font-weight:bold; margin-bottom:8px;">📅 ${t.date}</div>
-                    ${t.matches.map(m => `<div class="ticket-item">${m.h} vs ${m.a} : <b>${m.market}</b>${m.score ? ` (${m.score})` : ''}</div>`).join('')}
-                </div>
-            `).join('');
-        }
-
-        function renderMessages() {
-            const container = document.getElementById('msg-list');
-            if(currentUser.messages.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color:var(--muted); margin-top:20px;">Aucun message.</p>';
-                return;
-            }
-            container.innerHTML = currentUser.messages.map(m => `
-                <div class="card" style="font-size:12px; border-left:4px solid var(--primary);">
-                    <small style="color:var(--muted);">${m.date}</small>
-                    <p style="margin-top:5px;">${m.text}</p>
-                </div>
-            `).join('');
-        }
-
-        function renderProfile() {
-            document.getElementById('prof-name').innerText = currentUser.name;
-            document.getElementById('prof-email').innerText = currentUser.email;
-            document.getElementById('prof-whatsapp').innerHTML = `📱 WhatsApp: ${currentUser.whatsapp || 'Non renseigné'}`;
-            
-            const picContainer = document.getElementById('profile-pic-container');
-            if(currentUser.profileImage) {
-                picContainer.innerHTML = `<img src="${currentUser.profileImage}" class="profile-pic" alt="Photo de profil">`;
-            } else {
-                picContainer.innerHTML = `<div class="profile-pic" style="background:var(--border); display:flex; align-items:center; justify-content:center;">📷</div>`;
-            }
-            
-            let badgeHtml = currentUser.isPremium ? 
-                '<span class="status-badge" style="background:var(--pink);">💎 PREMIUM</span>' : 
-                (currentUser.isVerified ? '<span class="status-badge" style="background:var(--green); color:#000;">✅ VÉRIFIÉ</span>' : '<span class="status-badge" style="background:var(--muted);">⏳ NON VÉRIFIÉ</span>');
-            
-            if(currentUser.premiumExpiry) {
-                badgeHtml += `<br><small style="color:var(--muted);">Valable jusqu'au: ${new Date(currentUser.premiumExpiry).toLocaleDateString()}</small>`;
-            }
-            
-            document.getElementById('prof-badge').innerHTML = badgeHtml;
-            document.getElementById('id-upload-section').style.display = currentUser.isVerified ? 'none' : 'block';
-        }
-
-        function handleProfileUpload(input) {
-            if(input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    currentUser.profileImage = e.target.result;
-                    updateUser();
-                    renderProfile();
-                    alert("Photo de profil mise à jour !");
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function handleIDUpload(input) {
-            if(input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    currentUser.idImage = e.target.result;
-                    currentUser.idSent = true;
-                    updateUser();
-                    alert("Pièce d'identité envoyée ! Un admin va vérifier votre compte.");
-                    renderProfile();
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        // --- ADMIN LOGIC ---
-        function showAdminLogin() {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('admin-login').style.display = 'block';
-        }
-
-        function loginAdmin() {
-            if(document.getElementById('admin-code').value === "0033mutwe") {
-                document.getElementById('admin-login').style.display = 'none';
-                document.getElementById('admin-panel').style.display = 'block';
-                renderAdminUsers();
-                updateAdminStats();
-            } else alert("Code erroné.");
-        }
-
-        function renderAdminUsers() {
-            const container = document.getElementById('admin-users');
-            container.innerHTML = db.map((u, i) => `
-                <div class="card" style="font-size:11px;">
-                    <b>${u.name}</b> (${u.email})<br>
-                    📱 WhatsApp: ${u.whatsapp || 'Non renseigné'}<br>
-                    📅 Créé le: ${u.createdAt || 'Date inconnue'}<br>
-                    ID Envoyé: ${u.idSent ? 'OUI' : 'NON'} | Vérifié: ${u.isVerified ? 'OUI' : 'NON'}<br>
-                    Premium: ${u.isPremium ? 'ACTIF' : 'INACTIF'} ${u.premiumExpiry ? `(jusqu'au ${new Date(u.premiumExpiry).toLocaleDateString()})` : ''}<br>
-                    ${u.idImage ? `<div><strong>Pièce d'identité:</strong><br><img src="${u.idImage}" class="admin-img-preview" onclick="window.open(this.src)"></div>` : '<div>📄 Aucune ID téléchargée</div>'}
-                    ${u.profileImage ? `<div><strong>Photo profil:</strong><br><img src="${u.profileImage}" class="admin-img-preview" onclick="window.open(this.src)"></div>` : ''}
-                    <div style="display:flex; gap:5px; margin-top:10px; flex-wrap:wrap;">
-                        <button class="btn btn-success" style="padding:5px;" onclick="adminVerify(${i})">Vérifier</button>
-                        <button class="btn btn-primary" style="padding:5px;" onclick="openPremiumModal(${i})">Premium</button>
-                        <button class="btn btn-danger" style="padding:5px;" onclick="adminBlock(${i})">${u.isBlocked ? 'Débloquer' : 'Bloquer'}</button>
-                        <button class="btn btn-warning" style="padding:5px;" onclick="sendMessageToUser(${i})">📨 Message</button>
-                        <button class="btn btn-info" style="padding:5px;" onclick="viewUserTickets(${i})">🎫 Tickets</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-        
-        function viewUserTickets(index) {
-            const user = db[index];
-            const container = document.getElementById('admin-tickets-list');
-            if(user.tickets.length === 0) {
-                container.innerHTML = '<p>Aucun ticket enregistré.</p>';
-            } else {
-                container.innerHTML = user.tickets.map(t => `
-                    <div class="card" style="margin-bottom:10px;">
-                        <small style="color:var(--muted);">📅 ${t.date}</small>
-                        ${t.matches.map(m => `<div class="ticket-item">${m.h} vs ${m.a} : <b>${m.market}</b>${m.score ? ` (${m.score})` : ''}</div>`).join('')}
-                    </div>
-                `).join('');
-            }
-            document.getElementById('modal-tickets').classList.add('active');
-        }
-
-        function sendMessageToUser(index) {
-            const msg = prompt("Message à envoyer à l'utilisateur :");
-            if(msg) {
-                db[index].messages.push({date: new Date().toLocaleString(), text: msg});
-                db[index].unreadMessages = (db[index].unreadMessages || 0) + 1;
-                saveDB();
-                renderAdminUsers();
-                alert("Message envoyé !");
-            }
-        }
-
-        function adminVerify(i) {
-            db[i].isVerified = true;
-            db[i].messages.push({date: new Date().toLocaleString(), text: "✅ Félicitations ! Votre identité a été vérifiée."});
-            db[i].unreadMessages = (db[i].unreadMessages || 0) + 1;
-            saveDB(); 
-            renderAdminUsers();
-        }
-
-        function adminBlock(i) {
-            db[i].isBlocked = !db[i].isBlocked;
-            saveDB(); 
-            renderAdminUsers();
-        }
-
-        function openPremiumModal(i) {
-            adminUserIdx = i;
-            document.getElementById('modal-premium').classList.add('active');
-        }
-
-        function confirmPremium() {
-            const days = parseInt(document.getElementById('pre-days').value);
-            const expiryDate = new Date();
-            expiryDate.setDate(expiryDate.getDate() + days);
-            
-            db[adminUserIdx].isPremium = true;
-            db[adminUserIdx].premiumExpiry = expiryDate.toISOString();
-            db[adminUserIdx].messages.push({
-                date: new Date().toLocaleString(), 
-                text: `💎 Accès PREMIUM activé pour ${days} jours ! (valable jusqu'au ${expiryDate.toLocaleDateString()})`
-            });
-            db[adminUserIdx].unreadMessages = (db[adminUserIdx].unreadMessages || 0) + 1;
-            saveDB();
-            closeModal();
-            renderAdminUsers();
-        }
-
-        // --- ASSISTANT ZOLA ---
-        function toggleAssistant() {
-            const chat = document.getElementById('assistant-chat');
-            chat.classList.toggle('active');
-        }
-        
-        function askZola() {
-            const input = document.getElementById('assistant-input');
-            const question = input.value.trim();
-            if(!question) return;
-            
-            const messagesDiv = document.getElementById('assistant-messages');
-            messagesDiv.innerHTML += `<div class="assistant-bubble assistant-user">${question}</div>`;
-            input.value = '';
-            
-            setTimeout(() => {
-                let answer = getZolaAnswer(question);
-                messagesDiv.innerHTML += `<div class="assistant-bubble assistant-bot">${answer}</div>`;
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }, 500);
-        }
-        
-        function getZolaAnswer(question) {
-            const q = question.toLowerCase();
-            if(q.includes('ticket') || q.includes('coupon')) {
-                return "🎫 Pour créer un ticket : 1️ Analyser un match, 2️ Cliquer sur 'Ajouter au coupon', 3️ Ajouter d'autres matchs (Premium), 4️ Enregistrer le ticket. Les tickets sont visibles dans l'onglet TICKETS.";
-            }
-            if(q.includes('premium') || q.includes('abonnement')) {
-                return "💎 Premium : 5 tickets/jour, 2-15 matchs/ticket, scores exacts inclus. Contactez l'administrateur via WhatsApp pour activer votre abonnement.";
-            }
-            if(q.includes('vérification') || q.includes('id') || q.includes('carte')) {
-                return "📷 Pour être vérifié : Allez dans PROFIL → Téléchargez votre pièce d'identité. L'admin validera manuellement votre compte.";
-            }
-            if(q.includes('match') || q.includes('analyser')) {
-                return "⚽ Pour analyser un match : Sélectionnez deux équipes du même continent, cliquez sur ANALYSER. Les comptes Standard ont 1 match/jour.";
-            }
-            if(q.includes('score') || q.includes('exact')) {
-                return "🎯 Les scores exacts sont disponibles uniquement pour les comptes PREMIUM. Ils sont générés intelligemment selon le marché et le rapport de force.";
-            }
-            if(q.includes('bloc') || q.includes('continent')) {
-                return "🌍 Les matchs sont valides uniquement entre équipes du même continent : Europe, Afrique, Amérique/Asie, Océanie.";
-            }
-            if(q.includes('whatsapp')) {
-                return "📱 Votre numéro WhatsApp est utilisé pour la communication avec l'administrateur. Il est visible dans votre profil.";
-            }
-            return "🤖 Je suis Zola, votre assistant. Posez-moi des questions sur : tickets, premium, vérification ID, analyse de matchs, scores exacts, blocs continentaux, ou WhatsApp.";
-        }
-
-        // --- UTILS ---
-        function toggleAuth(s) {
-            document.getElementById('auth-screen').style.display = s ? 'none' : 'block';
-            document.getElementById('register-screen').style.display = s ? 'block' : 'none';
-        }
-        
-        function updateUser() {
-            const idx = db.findIndex(u => u.email === currentUser.email);
-            if(idx !== -1) db[idx] = currentUser;
-            saveDB();
-        }
-        
-        function closeModal() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
-        function logout() { location.reload(); }
-    </script>
+// ====================================================================
+// NAVIGATION
+// ====================================================================
+function switchView(v){
+    ['predict','tickets','profile'].forEach(x=>document.getElementById('view-'+x).style.display=v===x?'block':'none');
+    document.getElementById('view-ticket-detail').style.display='none';
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.querySelectorAll('.nav-item')[v==='predict'?0:v==='tickets'?1:2].classList.add('active');
+    if(v==='tickets')renderSavedTickets();if(v==='profile'){renderProfile();updCountdown();}
+}
+function toggleAuth(r){document.getElementById('auth-screen').style.display=r?'none':'block';document.getElementById('register-screen').style.display=r?'block':'none';}
+function toggleAssistant(){const c=document.getElementById('assistant-chat');c.style.display=c.style.display==='flex'?'none':'flex';}
+function askZola(){
+    const inp=document.getElementById('assistant-input');if(!inp.value.trim())return;
+    const msg=document.getElementById('assistant-messages'),q=inp.value.trim().toLowerCase();
+    msg.innerHTML+=`<div style="background:var(--primary);margin:5px 0 5px auto;padding:8px;border-radius:12px;max-width:85%;text-align:right">${inp.value}</div>`;inp.value='';
+    let r="🤖 Posez vos questions !";
+    if(q.includes('gourmand'))r="🍽️ Ticket Gourmand = 12+ matchs. Max 20 matchs/ticket, 4 tickets/jour.";
+    else if(q.includes('doubler'))r="🔄 Doubler = change 3 à 5 résultats aléatoires sur le ticket.";
+    else if(q.includes('code'))r="🔑 Codes 20 chiffres. Contactez l'admin WhatsApp pour obtenir votre code d'activation.";
+    else if(q.includes('limite'))r="📏 Max 4 tickets/jour, 20 matchs/ticket. Compte vérifié = 2 analyses gratuites/jour. Premium = analyses illimitées.";
+    else if(q.includes('sécurité')||q.includes('securite'))r="🛡️ Vos données sont protégées par signature cryptographique. Toute modification est détectée.";
+    else if(q.includes('btts'))r="⚽ BTTS = Both Teams To Score = Les 2 équipes marquent.";
+    else if(q.includes('over'))r="📊 Over 2.5 = 3+ buts. Under 2 = max 1 but.";
+    else if(q.includes('analyse')||q.includes('gratuit'))r="📊 Compte vérifié = 2 analyses gratuites par jour. Premium = analyses illimitées.";
+    setTimeout(()=>{msg.innerHTML+=`<div style="background:var(--border);margin:5px 0;padding:8px;border-radius:12px;white-space:pre-line">${r}</div>`;msg.scrollTop=msg.scrollHeight;},500);
+}
+function logout(){stopCountdown();location.reload();}
+</script>
 </body>
-</html>
+                </html>
